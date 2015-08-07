@@ -1,0 +1,151 @@
+<%@ page contentType="text/html; charset=GBK"%>
+<%@ include file="../../messager.jsp" %>
+<%@ taglib uri="/WEB-INF/framework-ogm.tld" prefix="eaf" %>
+<%
+String path = request.getContextPath();
+
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>日志查询</title>
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<link href="../../../style/css.css" rel="stylesheet" />
+<link href="../../../style/hotmail.css" rel="stylesheet" />
+<script type="text/javascript" src="<%=path %>/js/common.js"></script>
+<script type="text/javascript" src="<%=path %>/js/calendar.js"></script>
+<script type="text/javascript" src="<%=path %>/js/page_init.js"></script>
+<jsp:include flush="true" page="../../../common_head.jsp"></jsp:include>
+<script type="text/javascript">
+function clearAll(){
+	searchForm.l_send_user.value = "";
+	searchForm.l_send_type.selectedIndex = 0;
+	searchForm.startDate.value = "";
+	searchForm.endDate.value = "";
+	searchForm.l_send_user.focus();
+}
+function deleteLogs(){
+	var deleteLogsStr = "";
+	var logs = document.getElementsByName("logId");
+	if(logs != null && logs.length > 0){
+		for(var i=0; i<3; i++){
+			if(logs[i].checked){
+				deleteLogsStr = deleteLogsStr + logs[i].value + ",";
+			}
+		}
+		if(deleteLogsStr == ""){
+			alert("请选择要删除的信息！");
+			return;
+		}else{
+			if(confirm("确定要删除这些日志信息吗？")){
+				window.location = "sendLogAction.do?action=deleteLogs&logs=" + deleteLogsStr;
+			}
+		}
+	}
+}
+function initPage(){
+	selectInit("l_send_type", "121");
+}
+
+function queryForDetailInfo(log_id)
+{
+	if(log_id!=""){
+		window.location = "queryForSendLogDetailInfo.do?log_id=" + log_id;
+	}
+}
+</script>
+</head>
+<body onload="initPage();">
+<eaf:label/>
+<br/>
+<!--
+//暂时不允许删除日志
+<table width="95%" align="center">
+  <tr align="right">
+    <td align="right">
+      <input type="button" value="删除日志" class="button" style="width: 80;" onclick="deleteLogs();"/>
+    </td>
+  </tr>
+</table>
+-->
+<form name="searchForm" action="queryForSendLogs.do" method="post">
+<table class="mainTable">
+  <tbody>
+    <tr>
+      <td colspan="7" class="yi_hang_4">日志查询</td>
+    </tr>
+    <tr>
+      <td width="10%"><strong>发送人</strong></td>
+      <td width="20%"><input type="text" name="l_send_user" value="123"/></td>
+      <td width="10%"><strong>发送方式</strong></td>
+      <td width="20%">
+      	<select id="l_send_type" name="l_send_type">
+      	  <option value="">全部</option>
+      	  <option value="1">常规短信</option>
+      	  <option value="1">文件短信</option>
+      	  <option value="1">模版短信</option>
+      	</select>
+      </td>
+      <td align="right">
+      </td>
+    </tr>
+    <tr>
+      <td width="10%"><strong>开始时间</strong></td>
+      <td width="20%">
+        <input type="text" id="startDate" name="startDate" value="1" onfocus="calendar();" readonly="readonly"/>
+      </td>
+      <td width="10%"><strong>截止时间</strong></td>
+      <td width="20%">
+        <input type="text" id="endDate" name="endDate" value="1" onfocus="calendar();" readonly="readonly"/>
+      </td>
+      <td align="right">
+        <input type="submit" value="查询" class="button"/>
+        <input type="button" value="清空" class="button" onclick="clearAll();"/>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</form>
+<br/>
+<table width="95%" cellpadding="0" cellspacing="0" align="center">
+  <tbody>
+    <tr>
+      <td align="center">
+        <ec:table items="recordList" var="record"
+			retrieveRowsCallback="limit" sortRowsCallback="limit"
+			action="queryForSendLogs.do" xlsFileName="日志列表.xls" classic="true" showPrint="true"
+			useAjax="false" width="100%" pageSizeList="10,20,50,100,all"
+			rowsDisplayed="10" sortable="true">
+          <ec:row>
+            <ec:column width="5%" property="-" title="<input type='checkbox' onclick='checkAll(this.form);'/>" style="text-align:center" sortable="false">
+          	  <input type="checkbox" name="logId" value="${record.LOG_ID }"/>
+          	</ec:column>
+            <ec:column width="10%" property="REAL_NAME" title="发送人" style="text-align:center">
+            	<a href="javascript:queryForDetailInfo(${record.LOG_ID });">${record.REAL_NAME }</a>
+            </ec:column>
+            <ec:column width="10%" property="SEND_TIME" title="发送时间" cell="date" format="yyyy-MM-dd HH:mm" style="text-align:center"/>
+            <ec:column width="10%" property="SEND_DESC" title="发送类型" editTemplate="logDescMapTemplet" mappingItem="logDescMap" style="text-align:center"/>
+            <ec:column width="60%" property="EXT2" title="短信内容" style="text-align:center">
+            	<a href="javascript:queryForDetailInfo(${record.LOG_ID });" title="${record.EXT2 }">${record.SUBMESSAGE }</a>
+            </ec:column>
+            <ec:column width="5%" property="EXT1" title="发送数量" style="text-align:center"/>
+          </ec:row>
+        </ec:table>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td></td>
+    </tr>
+  </tfoot>
+</table>
+<textarea id="logDescMapTemplet" rows="0" cols="0" style="display: none;">
+	<select>
+		<ec:options items="logDescMap" />
+	</select>
+</textarea>
+</body>
+</html>

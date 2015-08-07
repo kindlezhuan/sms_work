@@ -1,0 +1,102 @@
+<%@ page contentType="text/html; charset=GBK"%>
+<%@ include file="../messager.jsp" %>
+<%@ taglib uri="/WEB-INF/framework-ogm.tld" prefix="eaf" %>
+<%
+String path = request.getContextPath();
+
+response.setHeader("Pragma", "No-cache");
+response.setHeader("Cache-Control", "no-cache,no-store,max-age=0");
+response.setDateHeader("Expires", 1);
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>发送Excel短信</title>
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<link href="../../style/css.css" rel="stylesheet" />
+<link href="../../style/hotmail.css" rel="stylesheet" />
+<script type="text/javascript">
+var showing = false;
+function downloadTemplet(){
+	window.location = "<%=path%>/download?filePath=/biz/sms/templet/FP_SMS_Templet1.xls";
+}
+function displayTempletImage(imageId){
+	var image = document.getElementById("templet1_image");
+	if(image != null){
+		if(showing){
+			image.style.display = "none";
+			document.getElementById("displayCtrl").innerHTML = "查看模板";
+			showing = false;
+		}else{
+			image.style.display = "block";
+			document.getElementById("displayCtrl").innerHTML = "隐藏模板";
+			showing = true;
+		}
+	}
+}
+
+function checkSendFile(thisform) {
+	var rightType=".xls";
+	var fileName = thisform.excelFile.value;
+	if (fileName == "") {
+		alert("上传号码文件不能为空！");
+		return false;		
+	}
+	var fileLen=fileName.length;
+	var fileType = fileName.substring(fileLen-4,fileLen);
+	if (fileType.toLowerCase() != rightType) {
+		alert("上传号码文件类型不正确！");
+		return false;
+	}
+	return true;
+}
+
+function send(){
+	var fileName = impExcelForm.excelFile.value;
+	if(fileName == ""){
+		alert("请选择模板文件!");
+		impExcelForm.excelFile.focus();
+		return;
+	}
+	else
+	{
+		var fileLen=fileName.length;
+		var fileType = fileName.substring(fileLen-4,fileLen);
+		if (fileType.toLowerCase() != ".xls") {
+			alert("上传号码文件类型不正确！只能为XLS文件！");
+			return false;
+		}
+	}
+	
+	impExcelForm.submit();
+}
+</script>
+</head>
+<body>
+<form name="impExcelForm" action="sendMessage.do?action=sendExcelMessage" method="post" enctype="multipart/form-data">
+  <table width="80%" align="center">
+    <tr>
+      <td> 
+	  	Excel文件：
+        <input type="file" name="excelFile" size="80" onchange="checkSendFile(this.form);">
+        <input name="submit" type="submit" value="发送" class="button">
+      </td>
+    </tr>
+  </table>
+</form>
+<table width="80%" align="center">
+  <tr>
+    <td> 
+	模板示例：
+	<a id="displayCtrl" href="javascript:displayTempletImage('templet1_image');" title="点击查看模板图片.">查看模板</a> &nbsp;&nbsp;&nbsp; 
+	<a href="javascript:downloadTemplet();" title="点击下载模板文件.">下载模板</a>
+	</td>
+  </tr>
+  <tr id="templet1_image" style="display:none;">
+    <td><img src="images/FP_SMS_Template1.gif" /></td>
+  </tr>
+</table>
+</body>
+</html>

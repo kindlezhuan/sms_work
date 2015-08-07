@@ -1,0 +1,179 @@
+function send(){
+	var calledUserArray = getCalledNumber();
+	if((calledUserArray == null || calledUserArray.length < 1) && !hadChooseGroup() && sendMsgForm.selectedDept.value==""){
+		alert("接收人或通讯录分组或部门分组不能为空!");
+		sendMsgForm.selectedUsers.focus();
+		return;
+	}
+	
+	if(sendMsgForm.sendContent.value == ""){
+		alert("发送内容不能为空!");
+		sendMsgForm.sendContent.focus();
+		return;
+	}
+	
+	sendMsgForm.receiverNums.value = calledUserArray.join(",");
+	//alert(sendMsgForm.receiverNums.value);
+	if(confirm("确定要发送该短信吗？"))
+		sendMsgForm.submit();
+}
+
+function showSendTimeCtrl(){
+	if(sendMsgForm.makeSendTime.checked){
+		initDate();
+		document.getElementById("sendTime").style.display = "block";
+	}else{
+		sendMsgForm.sendTime.value = "";
+		document.getElementById("sendTime").style.display = "none";
+	}
+}
+function initDate(){
+	var date = new Date();
+	var curYear = date.getYear();
+	var curMonth = date.getMonth()+1;
+	var curDate = date.getDate();
+	var curHour = date.getHours();
+	var curminiute = date.getMinutes();
+	var cursecond = date.getSeconds();
+	
+	if(curMonth<10){
+		curMonth="0"+curMonth;
+	}
+	if(curDate<10){
+		curDate="0"+curDate;
+	}
+	if(	curHour<10){
+		curHour="0"+curHour;
+	}
+	if(curminiute<10){
+		curminiute="0"+curminiute;
+	}
+	if(cursecond<10){
+		cursecond="0"+cursecond;
+	}
+	var strDate = curYear + "-" + curMonth + "-" + curDate + " " + curHour + ":" + curminiute + ":" + cursecond;
+	sendMsgForm.sendTime.value = strDate;
+}
+
+function countMsgLength(){
+	var content = sendMsgForm.sendContent.value;
+	var perSmsLen = document.getElementById("MSG_MAX_LENGTH").value;
+	if(perSmsLen == "")
+		perSmsLen = "70";
+	document.getElementById("stat_total").innerText = content.length;
+	document.getElementById("sms_num").innerText = Math.ceil(content.length/perSmsLen);
+}
+
+function hadChooseGroup(){
+	var sendGroups = document.getElementsByName("sendGroup");
+	if(sendGroups != null){
+		for(var i=0, n=sendGroups.length; i<n; i++){
+			if(sendGroups[i].checked)
+				return true;
+		}
+	}
+	return false;
+}
+
+function addUser(userName, userTel){
+	var newUser = userName + "(" + userTel + "),";
+	var calledUserObj = sendMsgForm.selectedUsers;
+	var calledUsers = calledUserObj.value;
+	var index = calledUsers.indexOf(newUser);
+	if(index != -1){
+		selectData(calledUserObj, index, newUser.length);
+	}else{
+		calledUserObj.value = calledUsers + newUser;
+	}
+}
+
+function getCalledNumber(){
+	var userNumber = "";
+	var calledUserArray = new Array();
+
+	var selectedUserStr = sendMsgForm.selectedUsers.value;
+	var selectedUserArray = selectedUserStr.split(",");
+	for(var i=0,n=selectedUserArray.length; i<n; i++){
+		var userInfo = selectedUserArray[i];
+		var indexOf1 = userInfo.indexOf("(");
+		var indexOf2 = userInfo.indexOf(")");
+		
+		if(indexOf1 != -1 && indexOf2 != -1){
+			userNumber = userInfo.substring(indexOf1 + 1, indexOf2);
+		}else{
+			userNumber = userInfo;
+		}
+		
+		if(validateNumber(userNumber)){
+			calledUserArray.push(userNumber);
+		}
+	}
+	return calledUserArray;
+}
+
+function displayGroupArea(){
+	if(document.getElementById("addGroupFlag").checked){
+		document.getElementById("groupArea").style.display = "block";
+	}else{
+		document.getElementById("groupArea").style.display = "none";
+		var sendGroups = document.getElementsByName("sendGroup");
+		if(sendGroups != null){
+			for(var i=0, n=sendGroups.length; i<n; i++){
+				sendGroups[i].checked = false;
+			}
+		}
+	}
+}
+
+//createTextRange只在具体对象时才能创建，createRange要用document.selection创建，否则提示不支持该函数
+function selectData(obj, startIndex, selectLen){
+	var rng = obj.createTextRange();//获取一个需要操作对象的TextRange
+	rng.collapse();//默认true收缩
+	rng.select();//因为已收缩Range，所以select后会将光标移到首部
+	
+	var sel = document.selection.createRange();//如果需要选中文本中的一部分，需要创建Range
+	sel.moveStart("character", startIndex);//移动开始点
+	sel.moveEnd("character", selectLen);//移动结束点
+	sel.select();//选中开始点到结束点间的字符 
+}
+
+function validateNumber(strNum){
+	strcheck="0123456789";
+	if(strNum.length != 11){
+		return false;
+	}
+	var i=0;
+	var tpval;
+	for(i=0;i<strNum.length;i++){
+		tpval=strNum.charAt(i);
+		if(strcheck.indexOf(tpval) == -1){
+			return false;
+		}
+	}
+	return true;
+}
+
+function initTemplate()
+{
+	var obj = sendMsgForm.smsTemplate;
+	 for (i = 0; i < obj.length; i++) {             
+      if (obj.options[i].selected == true)
+          sendMsgForm.sendContent.value = obj.options[i].value;
+  }
+  countMsgLength();
+}
+
+function addSignInfo(msg)
+{
+	var obj = sendMsgForm.sendContent;
+	var chkobj = document.getElementById("addedInfoFlag");
+	
+	if(chkobj.checked)
+		obj.value = obj.value + "<" + msg + ">";
+	else
+	{
+		if(obj.value.indexOf("<"+msg+">")>=0)
+			obj.value = obj.value.replace("<"+msg+">","");
+	}
+	countMsgLength();
+}

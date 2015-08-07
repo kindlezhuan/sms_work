@@ -1,0 +1,21 @@
+﻿[{
+    	text: '单条发送',
+    	leaf: true,
+    	qtitle: "sms_send/sms_send_sendOne.do"
+	},{
+    	text: '短信群发',
+    	expanded: false,
+    	children :[{
+    		text: '记录簿发送',
+	    	leaf: true,
+	    	qtitle: "sms_send/sms_send_sendList.do"
+    	},{
+    		text: '表格发送',
+	    	leaf: true,
+	    	qtitle: "sms_send/sms_send_sendFile.do"
+    	}]
+	},{
+    	text: '发送详情',
+    	leaf: true,
+    	qtitle: "sms_send/sms_send_sendDetail.do"
+	}]

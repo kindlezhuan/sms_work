@@ -1,0 +1,49 @@
+package com.hk.sms.smsdo;
+
+
+import java.util.Date;
+
+import com.hk.sms.model.SMSLog;
+import com.hk.sms.model.SMSSave;
+import com.hk.sms.model.SMSSend;
+
+public class SMSInfoprocess {
+	//主要完成信息的发送以及最后将需要保存的对象加入到待保存的对列
+	//分成身份验证成功与身份验证失败两类：
+	SMSSave save;
+	SMSSend send;
+	public SMSLog infoProcess_success(SMSSave sendMessage){
+		//1.Send Message
+		SMSLog smsLog = null;
+		System.out.println("Send Message!");
+		//2.Save sendinfo
+//		//3.save Log;
+//		SMSSave smsSave = new SMSSave();
+//		smsSave.setTimeMsg_ID(sendMessage.getTimeMsg_ID());
+//		smsSave.setUID(sendMessage.getUID());
+//		smsSave.setMOBILE(sendMessage.getMOBILE());
+//		smsSave.setMSG(sendMessage.getMSG());
+		sendMessage.setSend_time(new Date().toString());
+//		smsLog = SMSSendSave.sendDO(sendMessage);//发送短信
+		smsLog = new SMSLog();
+		smsLog.setSend_result("0#1");
+		if("faile".equals(smsLog.getSend_result()) ||smsLog.getSend_result() == null || smsLog.getSend_result() == "" ){
+			return smsLog;
+		}else{
+			smsLog.setGet_time(sendMessage.getGet_time());
+			smsLog.setSend_time(sendMessage.getSend_time());
+			sendMessage.setSend_result(smsLog.getSend_result());
+			sendMessage.setSavetime(new Date());
+			smsLog.setSavetime(sendMessage.getSavetime());
+			SMSSaveSave.saveDO(sendMessage);
+			SMSLogSave.saveDO(smsLog);
+		}
+		return smsLog;
+	}
+	public int infoProcess_failure(SMSSave sendMessage){
+		//将信息进行保存
+//		new SMSSaveSave().saveDO(sendMessage);
+//		new SMSLogSave().saveDO(sendMessage);
+		return 0;
+	}
+}

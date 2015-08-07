@@ -1,0 +1,126 @@
+package com.hk.sms.action;
+
+import java.io.IOException;
+import java.util.HashMap;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.struts2.ServletActionContext;
+
+import com.hk.sms.dao.UserDao;
+import com.hk.sms.model.ResultMessage;
+import com.hk.sms.model.SMSLog;
+import com.hk.sms.smsdo.SMSInfoprocess;
+import com.hk.sms.utils.DateFormate;
+import com.hk.sms.utils.Object2XML;
+import com.hk.sms.utils.StringUtil;
+import com.hk.sms.utils.TypeAndStatusConstant;
+import com.hk.sms.utils.UserInfo;
+import com.opensymphony.xwork2.ActionContext;
+
+public class MessageDoAction extends BaseAction {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private UserDao userDao;   
+	@SuppressWarnings("rawtypes")
+	HashMap info;
+	ActionContext ctx = ActionContext.getContext();
+
+	HttpSession session = ServletActionContext.getRequest().getSession();
+	HttpServletResponse response = ServletActionContext.getResponse();
+	HttpServletRequest request = (HttpServletRequest) ctx
+			.get(ServletActionContext.HTTP_REQUEST);
+	String XMLString = request.getParameter("xml");
+	Object2XML o2x = new Object2XML();
+    @SuppressWarnings({ "rawtypes", "unused" })
+	public String execute() throws Exception {
+	    	response.setHeader("Content-type", "text/html;charset=UTF-8"); 
+    	if(request.getMethod()==null || !request.getMethod().equalsIgnoreCase("post")){  
+    	    return null;  
+    	} 
+    	
+    	SMSLog smsLog = o2x.extractUsername(XMLString);
+    	smsLog.setGet_time(DateFormate.DateTOString());
+    	smsLog.setGet_style(TypeAndStatusConstant.SEND_MESSAGE_FROM_INTERFACE);
+    	ResultMessage restultMessage = new ResultMessage();
+		if(smsLog != null){
+			info = (HashMap) UserInfo.USERINFO.get(smsLog.getUID());
+			System.out.println(smsLog.getUPWD());
+		}
+		else
+			info = null;
+        if(info == null){
+//        	response.setStatus(1221, "12321");
+//        	response.setStatus(15);
+        	restultMessage.setTimeMsg_ID(smsLog.getTimeMsg_ID());
+        	restultMessage.setResult(TypeAndStatusConstant.SEND_RESULT_FAIL_STRING);
+        	restultMessage.setResultCode(Integer.toString(TypeAndStatusConstant.SEND_MESSAGE_STATE_RESULT_NOTHEUSER));
+        	restultMessage.setResultInfo(TypeAndStatusConstant.SEND_MESSAGE_STATE_RESULT_NOTHEUSER_STRING);
+        	restultMessage.setStatus(14);
+        	String XMLresult = o2x.constructResultXML(restultMessage);
+        	responseContent(response,XMLresult);
+        	return null;  
+        }else{
+            if(info.get("pwd").equals(smsLog.getUPWD())){
+            	//doSomething
+            	//msg info 大于500的处理
+//            	String infoArray[] = StringUtil.StringtoArray(smsLog.getMSG());//用于信息过长时分段发送
+//				for(int iL =0;iL<infoArray.length;iL++){
+//					
+//				}
+            	if(smsLog.getMSG().length()<501){
+            		restultMessage = new SMSInfoprocess().infoProcess_success(smsLog);
+            	}else{
+            		restultMessage.setTimeMsg_ID(smsLog.getTimeMsg_ID());
+            		restultMessage.setResult("fail");
+            		restultMessage.setResultCode("107");
+            		restultMessage.setResultInfo("内容长度大于500");
+            		restultMessage.setStatus(15);
+            	}
+            	
+            	String XMLresult = o2x.constructResultXML(restultMessage);
+            	responseContent(response,XMLresult);
+            	return null;
+            }else{
+//            	int result_int = new SMSInfoprocess().infoProcess_failure(smsLog);
+            	restultMessage.setTimeMsg_ID(smsLog.getTimeMsg_ID());
+            	restultMessage.setResult(TypeAndStatusConstant.SEND_RESULT_FAIL_STRING);
+            	restultMessage.setResultCode(Integer.toString(TypeAndStatusConstant.SEND_MESSAGE_STATE_RESULT_WRONGPASSWORD));
+            	restultMessage.setResultInfo(TypeAndStatusConstant.SEND_MESSAGE_STATE_RESULT_WRONGPASSWORD_STRING);
+            	restultMessage.setStatus(16);
+            	
+            	String XMLresult = o2x.constructResultXML(restultMessage);
+            	responseContent(response,XMLresult);
+            	return null;  
+            }   
+        }
+    }  
+    public static void responseContent(HttpServletResponse response,String content){  
+        try {  
+            byte[] xmlData = content.getBytes("UTF-8");     
+            response.setContentLength(xmlData.length);     
+  
+            ServletOutputStream os = response.getOutputStream();  
+            
+            os.write(xmlData);     
+  
+            os.flush();     
+            os.close();    
+        } catch (IOException e) {  
+            e.printStackTrace();  
+        }     
+    }  
+
+	public UserDao getUserDao() {
+		return userDao;
+	}
+	public void setUserDao(UserDao userDao) {
+		this.userDao = userDao;
+	}
+}

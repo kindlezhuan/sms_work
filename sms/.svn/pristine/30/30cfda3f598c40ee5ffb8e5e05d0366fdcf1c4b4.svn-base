@@ -1,0 +1,45 @@
+<%@ page contentType="text/html; charset=GBK"%>
+<%@ taglib uri="/WEB-INF/framework-ogm.tld" prefix="eaf" %>
+<%
+String path = request.getContextPath();
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>黑名单联系人信息</title>
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<link href="../../../style/css.css" rel="stylesheet" />
+<link href="../../../style/hotmail.css" rel="stylesheet" />
+</head>
+<body>
+<eaf:label/>
+<form action="blackUserAction.do?action=saveBlackUser" method="post">
+  <table class="settletable" align="center" width="95%">
+    <tr>
+      <td colspan="4" class="yi_hang_8">黑名单联系人信息</td>
+    </tr>
+    <tr>
+      <td class="yi_hang_4" ><b>手机号码</b></td>
+      <td class="yi_hang_9" colspan="3">
+        <input type="text" name="userNumber" class="input_bottomline_nolength" size="100"/>
+      </td>
+    </tr>
+    <tr>
+      <td class="yi_hang_4" ><b>添加原因</b></td>
+      <td class="yi_hang_9" colspan="3">
+        <textarea name="addReason" rows="5" cols="100"></textarea>
+      </td>
+    </tr>
+    <tr>
+      <td class="yi_hang_9" ></td>
+      <td class="yi_hang_9" colspan="3">
+        <input type="submit" value="保存" class="button"/>
+        <input type="button" value="取消" class="button" onClick="window.location='queryForBlackUsers.do'"/>
+      </td>
+    </tr>
+  </table>
+</form>
+</body>
+</html>

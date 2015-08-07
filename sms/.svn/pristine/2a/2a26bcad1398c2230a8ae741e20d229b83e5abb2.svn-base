@@ -1,0 +1,14 @@
+﻿ [{
+        text: '出库入库',
+        leaf: true,
+         qtitle: "hbj_crk/hc_toHbj_Crk.do"
+    },{
+        text: '危废转移',
+        leaf: true,
+        qtitle: "hbj_yeWuGuanLi/hy_toZhuanYiLianDan.do?pageFlg=1"
+    },{
+        text: '污泥转移',
+        leaf: true,
+         qtitle: "hbj_yeWuGuanLi/hy_toZhuanYiLianDan.do?pageFlg=2"
+       /* qtitle: "hbj_wfzy/hw_toHbjWfzy.do"*/
+    }]

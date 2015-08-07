@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>    
+    <mappers>    
+        <!-- 配置sql语句文件 -->    
+        <mapper resource="com/hsinghsu/testSSI/data/User.xml" />    
+    </mappers>    
+</configuration> 

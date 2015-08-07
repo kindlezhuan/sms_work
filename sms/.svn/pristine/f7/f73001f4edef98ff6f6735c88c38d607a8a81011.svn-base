@@ -1,0 +1,61 @@
+package com.hk.sms.smsdo;
+
+
+
+import com.hk.sms.model.ResultMessage;
+import com.hk.sms.model.SMSLog;
+import com.hk.sms.model.SMSSave;
+import com.hk.sms.utils.DateFormate;
+import com.hk.sms.utils.TypeAndStatusConstant;
+import com.test.SendTest;
+
+public class SMSInfoprocess {
+	//主要完成信息的发送以及最后将需要保存的对象加入到待保存的对列
+	//分成身份验证成功与身份验证失败两类：
+	public ResultMessage infoProcess_success(SMSLog smsLog){
+		//1.Send Message
+		ResultMessage  resultMessage= new ResultMessage();
+		System.out.println("Send Message!");
+		SMSSave smsSave = null;
+		smsLog.setSend_time(DateFormate.DateTOString());
+		smsLog  = SMSSend.sendDO(smsLog);//发送一条短信
+		smsLog.setSend_style("baiwutong");
+		
+		resultMessage.setTimeMsg_ID(smsLog.getTimeMsg_ID());
+		resultMessage.setResultCode(smsLog.getSend_result_code());
+		resultMessage.setResultInfo(smsLog.getSend_result_code_info());
+		
+//		smsLog.setSend_result("0#1");
+		if("fail".equals(smsLog.getSend_result()) ||smsLog.getSend_result() == null || smsLog.getSend_result() == "" ){
+			resultMessage.setResult("fail");//发送失败
+			smsLog.setSavetime(DateFormate.DateTOString());
+			smsLog.setSend_result(Integer.toString(TypeAndStatusConstant.SEND_RESULT_FAIL));
+			SMSLogSave.saveDO(smsLog);
+		}else{
+			resultMessage.setResult("success");//发送成功
+			smsLog.setSend_result(Integer.toString(TypeAndStatusConstant.SEND_RESULT_SUCCESS));
+//			smsSave = new SMSSave();
+//			smsSave.setGet_time(smsLog.getGet_time());
+//			smsSave.setSend_time(smsLog.getSend_time());
+//			smsSave.setSend_result(smsLog.getSend_result());
+			smsLog.setSavetime(DateFormate.DateTOString());
+//			smsSave.setSavetime(smsLog.getSavetime());
+//			smsLog.setMSG("12321");
+//			smsSave.setUID(smsLog.getUID());
+//			smsSave.setMOBILE(smsLog.getMOBILE());
+//			smsSave.setTimeMsg_ID(smsLog.getTimeMsg_ID());
+//			smsSave.setMSG(smsLog.getMSG());
+//			SMSSaveSave.saveDO(smsSave);
+			SMSLogSave.saveDO(smsLog);
+			
+
+		}
+		return resultMessage;
+	}
+	public int infoProcess_failure(SMSSave sendMessage){
+		//将信息进行保存
+//		new SMSSaveSave().saveDO(sendMessage);
+//		new SMSLogSave().saveDO(sendMessage);
+		return 0;
+	}
+}

@@ -1,0 +1,125 @@
+<%@ page contentType="text/html; charset=GBK"%>
+<%@ include file="../../messager.jsp" %>
+<%@ taglib uri="/WEB-INF/framework-ogm.tld" prefix="eaf" %>
+<%
+String path = request.getContextPath();
+
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>部门短信报表</title>
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<link href="../../../style/css.css" rel="stylesheet" />
+<link href="../../../style/hotmail.css" rel="stylesheet" />
+<script type="text/javascript" src="<%=path %>/js/common.js"></script>
+<script type="text/javascript" src="<%=path %>/js/calendar.js"></script>
+<script type="text/javascript" src="<%=path %>/js/page_init.js"></script>
+<jsp:include flush="true" page="../../../common_head.jsp"></jsp:include>
+<script type="text/javascript">
+function clearAll(){
+	searchForm.deptId.value = "";
+	searchForm.startDate.value = "";
+	searchForm.endDate.value = "";
+}
+function deleteLogs(){
+	var deleteLogsStr = "";
+	var logs = document.getElementsByName("logId");
+	if(logs != null && logs.length > 0){
+		for(var i=0; i<logs.length; i++){
+			if(logs[i].checked){
+				deleteLogsStr = deleteLogsStr + logs[i].value + ",";
+			}
+		}
+		if(deleteLogsStr == ""){
+			alert("请选择要删除的信息！");
+			return;
+		}else{
+			if(confirm("确定要删除这些日志信息吗？")){
+				window.location = "sendLogAction.do?action=deleteLogs&logs=" + deleteLogsStr;
+			}
+		}
+	}
+}
+function initPage(){
+	
+}
+
+function queryForDetailInfo(log_id)
+{
+	if(log_id!=""){
+		window.location = "queryForSendLogDetailInfo.do?log_id=" + log_id;
+	}
+}
+</script>
+</head>
+<body onload="initPage();">
+<eaf:label/>
+<br/>
+<!--
+//暂时不允许删除日志
+<table width="95%" align="center">
+  <tr align="right">
+    <td align="right">
+      <input type="button" value="删除日志" class="button" style="width: 80;" onclick="deleteLogs();"/>
+    </td>
+  </tr>
+</table>
+-->
+<form name="searchForm" action="DeptReport.do" method="post">
+<table class="mainTable">
+  <tbody>
+    <tr>
+      <td colspan="7" class="yi_hang_4">日志查询</td>
+    </tr>
+    <tr>
+      <td width="10%"><strong>发送部门</strong></td>
+      <td width="20%"><input type="text" name="deptId" value="1"/></td>
+      <td width="10%"><strong>开始时间</strong></td>
+      <td width="20%">
+        <input type="text" id="startDate" name="startDate" value="1" onfocus="calendar();" readonly="readonly"/>
+      </td>
+      <td width="10%"><strong>截止时间</strong></td>
+      <td width="20%">
+        <input type="text" id="endDate" name="endDate" value="1" onfocus="calendar();" readonly="readonly"/>
+      </td>
+      <td align="right">
+        <input type="submit" value="查询" class="button"/>
+        <input type="button" value="清空" class="button" onclick="clearAll();"/>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</form>
+<br/>
+<table width="95%" cellpadding="0" cellspacing="0" align="center">
+  <tbody>
+    <tr>
+      <td align="center">
+        <ec:table items="recordList" var="record"
+			retrieveRowsCallback="limit" sortRowsCallback="limit"
+			action="DeptReport.do" xlsFileName="部门短信报表.xls" classic="true" showPrint="true"
+			useAjax="false" width="100%" pageSizeList="10,20,50,100,all"
+			rowsDisplayed="10" sortable="true">
+          <ec:row>
+            <ec:column width="5%" property="-" title="<input type='checkbox' onclick='checkAll(this.form);'/>" style="text-align:center" sortable="false">
+          	  <input type="checkbox" name="logId" value="${record.LOG_ID }"/>
+          	</ec:column>
+            <ec:column property="DEPARTMENT_NAME" title="部门名称" style="text-align:center"/>
+            <ec:column width="20%" property="SENDTIMES" title="发送次数" style="text-align:center"/>
+            <ec:column width="20%" property="NUM" title="信息数量" style="text-align:center"/>
+          </ec:row>
+        </ec:table>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td></td>
+    </tr>
+  </tfoot>
+</table>
+</body>
+</html>

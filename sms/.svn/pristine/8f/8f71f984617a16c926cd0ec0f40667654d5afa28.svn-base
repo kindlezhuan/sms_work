@@ -1,0 +1,9 @@
+﻿ [{
+        	text: '报警查看',
+        	leaf: true,
+        	qtitle: "znjk/znjk_toJkPage.do"
+    	},{
+        	text: '设备报警异常信息',
+        	leaf: true,
+        	qtitle: "znjk/znjk_toSbyc.do"
+	}]

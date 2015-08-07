@@ -1,0 +1,213 @@
+<%@ page contentType="text/html; charset=GBK"%>
+<%@ include file="../messager.jsp" %>
+<jsp:directive.page import="java.util.List"/>
+<%@ taglib uri="/WEB-INF/framework-ogm.tld" prefix="eaf" %>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/biz/sms/";
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<base href="<%=basePath%>">
+<title>文件短信</title>
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<link href="../../style/css.css" rel="stylesheet" />
+<link href="../../style/hotmail.css" rel="stylesheet" />
+<script type="text/javascript" src="js/popControl.js"></script>
+<script type="text/javascript" src="js/popCalendar.js"></script>
+<script type="text/javascript">
+function send(){
+	if(sendFileMsgForm.sendContent.value == ""){
+		alert("发送内容不能为空!");
+		sendFileMsgForm.sendContent.focus();
+		return;
+	}
+	
+	var fileName = sendFileMsgForm.numberFile.value;
+	if(fileName == ""){
+		alert("请选择接收信息的用户文件!");
+		sendFileMsgForm.numberFile.focus();
+		return;
+	}
+	else
+	{
+		var fileLen=fileName.length;
+		var fileType = fileName.substring(fileLen-4,fileLen);
+		if (fileType.toLowerCase() != ".txt") {
+			alert("上传号码文件类型不正确！只能为TXT文件！");
+			return false;
+		}
+	}
+	
+	if(confirm("确定要发送该短信吗？"))
+		sendFileMsgForm.submit();
+}
+function downloadTemplet(){
+	window.location = "<%=path%>/download?filePath=/biz/sms/templet/FP_SMS_Templet2.txt";
+}
+
+function showSendTimeCtrl(){
+	if(sendFileMsgForm.makeSendTime.checked){
+		initDate();
+		document.getElementById("sendTime").style.display = "block";
+	}else{
+		sendFileMsgForm.sendTime.value = "";
+		document.getElementById("sendTime").style.display = "none";
+	}
+}
+
+function countMsgLength(){
+	var content = sendFileMsgForm.sendContent.value;
+	var perSmsLen = document.getElementById("MSG_MAX_LENGTH").value;
+	if(perSmsLen == "")
+		perSmsLen = "70";
+	document.getElementById("stat_total").innerText = content.length;
+	document.getElementById("sms_num").innerText = Math.ceil(content.length/perSmsLen);
+}
+
+function addSignInfo(msg)
+{
+	var obj = sendFileMsgForm.sendContent;
+	var chkobj = document.getElementById("addedInfoFlag");
+	
+	if(chkobj.checked)
+		obj.value = obj.value + "<" + msg + ">";
+	else
+	{
+		if(obj.value.indexOf("<"+msg+">")>=0)
+			obj.value = obj.value.replace("<"+msg+">","");
+	}
+	countMsgLength();
+}
+
+function initTemplate()
+{
+	var obj = sendFileMsgForm.smsTemplate;
+	 for (i = 0; i < obj.length; i++) {             
+      if (obj.options[i].selected == true)
+          sendFileMsgForm.sendContent.value = obj.options[i].value;
+  }
+  countMsgLength();
+}
+
+function initDate(){
+	var date = new Date();
+	var curYear = date.getYear();
+	var curMonth = date.getMonth()+1;
+	var curDate = date.getDate();
+	var curHour = date.getHours();
+	var curminiute = date.getMinutes();
+	var cursecond = date.getSeconds();
+	
+	if(curMonth<10){
+		curMonth="0"+curMonth;
+	}
+	if(curDate<10){
+		curDate="0"+curDate;
+	}
+	if(	curHour<10){
+		curHour="0"+curHour;
+	}
+	if(curminiute<10){
+		curminiute="0"+curminiute;
+	}
+	if(cursecond<10){
+		cursecond="0"+cursecond;
+	}
+	var strDate = curYear + "-" + curMonth + "-" + curDate + " " + curHour + ":" + curminiute + ":" + cursecond;
+	sendFileMsgForm.sendTime.value = strDate;
+}
+	
+function checkSendFile(thisform) {
+	var rightType=".txt";
+	var fileName = thisform.numberFile.value;
+	if (fileName == "") {
+		alert("上传号码文件不能为空！");
+		return false;		
+	}
+	var fileLen=fileName.length;
+	var fileType = fileName.substring(fileLen-4,fileLen);
+	if (fileType.toLowerCase() != rightType) {
+		alert("上传号码文件类型不正确！");
+		return false;
+	}
+	return true;
+}
+</script>
+</head>
+<body>
+<br>
+<form name="sendFileMsgForm" action="task/sendTaskAction.do?action=addTxtTask" method="post" enctype="multipart/form-data">
+  <input type="hidden" name="sendType" value="12">
+  <input type="hidden" name="MSG_MAX_LENGTH" value="12">
+  <table border="1" width="80%" align="center">
+  	<tr>
+	      <td>模板选择</td>
+	      <td>
+	          <select name="smsTemplate" onChange="initTemplate()">
+	          	<option>请选择短信模板</option>
+
+	          </select>
+	      </td>
+	  </tr>
+    <tr>
+      <td>短信内容</td>
+      <td>
+        <textarea name="sendContent" cols="80" rows="8" onChange="countMsgLength();" onKeyDown="countMsgLength();" onKeyPress="countMsgLength();" onKeyUp="countMsgLength();"></textarea>
+        <br/>
+        <div style="padding-top:5px;padding-bottom:3px;color:gray;font:9pt;">
+	          当前已输入&nbsp;
+	          <span id="stat_total" style="font-weight:bold;color:#FF6600;">
+	              0
+	          </span>
+	          &nbsp;&nbsp;个字，系统将以&nbsp;
+	          <span id="sms_num" style="font-weight:bold;color:#FF6600;">
+	              1
+	          </span>
+	          &nbsp;&nbsp;条短信发送！
+	      </div>
+      </td>
+    </tr>
+    <tr>
+      <td>选择被叫号码</td>
+      <td>
+        <input type="file" size=50 name="numberFile" onChange="checkSendFile(this.form);"/>
+        &nbsp;下载被叫号码模板请点击这里：<a href="javascript:downloadTemplet();">模板下载</a> </td>
+    </tr>
+    <tr>
+      <td>指定发送时间</td>
+      <td>
+        <table cellpadding="0" cellspacing="0">
+          <tr>
+            <td>
+              <input type="checkbox" name="makeSendTime" onClick="showSendTimeCtrl();"/>
+            </td>
+            <td>
+              <span id="sendTime" style="padding-left:5px;display:none;">
+              <input type="text" name="sendTime" size="20" readonly="readonly" onClick="popCalendar.show(this, sendTime)"/>
+              &nbsp;时间格式为：2009-01-01 00:00:00
+              </span>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>
+        <input type="button" value="发 送" class="button" onClick="send();"/>
+        &nbsp;&nbsp;
+        <input type="reset" value="重 填" class="button"/>
+        &nbsp;&nbsp;
+        <input type="checkbox" id="addedInfoFlag" onclick="addSignInfo('1')"/>
+        <!-- <input type="checkbox" id="addedInfoFlag" onclick="addSignInfo('1')"/> -->
+        <label>追加签名</label>
+      </td>
+    </tr>
+  </table>
+</form>
+</body>
+</html>

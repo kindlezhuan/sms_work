@@ -1,0 +1,25 @@
+<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <base href="<%=basePath%>">
+<title>登录</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge charset=UTF-8" />
+	<link href="ext-4.2.1/resources/css/ext-all.css" rel="stylesheet" type="text/css" />
+	 <script src="ext-4.2.1/ext-theme-neptune.js"></script>
+    <script src="ext-4.2.1/ext-all-debug.js" type="text/javascript"></script>
+    <!-- <script src="ExtJs/ext-all.js" type="text/javascript"></script> -->
+    <script src="ext-4.2.1/locale/ext-lang-zh_CN.js" type="text/javascript"></script>
+    <script type="text/javascript" src="js/login.js"></script>
+    <style type="text/css">
+    	.my-panel-no-border{border-style:none}
+    </style>
+</head>
+<body>
+	<div style="position:absolute; left:0; top:0; width:100%; height:100%"><img src="images/bg4.jpg" width=100% height=100%></div>
+</body>
+</html>

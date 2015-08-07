@@ -1,0 +1,17 @@
+﻿[{
+        text: '企业信息',
+        leaf: true,
+        qtitle: "companyInfo/ci_toCompanyInfo.do"
+    },{
+        text: '车辆运输记录',
+        leaf: true,
+        qtitle: "vehicleManage/vm_toVehicleRecords.do"
+    },{
+        text: '设备台账',
+        leaf: true,
+        qtitle: "shebei/sb_toSB.do"
+    },{
+        text: '用户管理',
+        leaf: true,
+        qtitle: "firstPage/zf_toUserList.do"
+    }]

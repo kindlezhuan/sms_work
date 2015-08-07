@@ -1,0 +1,15 @@
+﻿ [{
+        text: '出库入库',
+        leaf: true,
+        qtitle: "cfqy/cfqy_ckrk.do"
+    }
+    /*,{
+        text: '危废转移',
+        leaf: true,
+        qtitle: "cfqy/cfqy_wfzy.do"
+    },{
+        text: '污泥转移',
+        leaf: true,
+        qtitle: "cfqy/cfqy_wnzy.do"
+    }*/
+    ]

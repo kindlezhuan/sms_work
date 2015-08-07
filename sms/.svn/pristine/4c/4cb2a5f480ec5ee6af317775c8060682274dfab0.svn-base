@@ -1,0 +1,37 @@
+﻿[{
+		text: '注册企业信息',
+		leaf: true,
+		qtitle: "hbj_qiYeGuanLi/hq_toQyRegistInfo.do"
+		},{
+        text: '企业注册审核',
+        leaf: true,
+        qtitle: "hbj_qiYeGuanLi/hq_toQyRegistSH.do"
+    },{
+        text: '车辆运输记录',
+        leaf: true,
+        qtitle: "vehicleManage/vm_toVehicleRecords.do"
+    },{
+        text: '企业库存',
+        leaf: true,
+        qtitle: "hbj_qiYeGuanLi/hq_toQyKuCun.do"
+    },{
+        text: '企业台帐管理',
+        expanded: true,
+        children:[{
+        	text: '危废台帐',
+	        leaf: true,
+	        qtitle: "hbj_taiZhangGuanLi/ht_toWftz.do"
+        },{
+        	text: '污泥台帐',
+	        leaf: true,
+	        qtitle: "hbj_taiZhangGuanLi/ht_toWntz.do"
+        },{
+        	text: '设备台帐',
+	        leaf: true,
+	        qtitle: "shebei/sb_toSB.do"
+        },{
+        	text: '记录薄',
+	        leaf: true,
+	        qtitle: "hbj_taiZhangGuanLi/ht_toJlb.do"
+        }]
+      }]

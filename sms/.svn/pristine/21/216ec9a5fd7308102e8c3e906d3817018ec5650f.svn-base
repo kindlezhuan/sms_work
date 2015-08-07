@@ -1,0 +1,9 @@
+﻿[{
+        	text: '报警查看',
+        	leaf: true,
+        	url: "http://www.baidu.com"
+    	},{
+        	text: '视频查询',
+        	leaf: true,
+        	url: "http://www.baidu.com"
+    	}]

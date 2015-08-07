@@ -1,0 +1,13 @@
+﻿[{
+    text: '巡检管理',
+    expanded: true,
+    children: [{
+        text: '任务管理',
+        leaf: true,
+        url: "http://www.baidu.com"
+    },{
+        text: '任务跟踪',
+        leaf: true,
+        url: "http://www.baidu.com"
+    }]
+}]

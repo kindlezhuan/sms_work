@@ -1,0 +1,9 @@
+[{
+    	"text": "通讯录",
+    	"leaf": true,
+    	"qtitle": "sms_user/sms_user_toAdreesBook.do"
+	},{
+    	"text": "用户管理",
+    	"leaf": true,
+    	"qtitle": "sms_user/sms_user_toPageusermanager.do"
+	}]

@@ -1,0 +1,14 @@
+[{
+	    text: '企业信息',
+	    leaf: 'true',
+	    qtitle: "czqy/czqy_qyxx.do"
+	},{
+	    text: '用户管理',
+	    leaf: 'true',
+	    qtitle: "czqy/czqy_yhgl.do"
+	},{
+	    text: '设备管理',
+	    leaf: 'true',
+	    qtitle: "shebei/sb_toSB.do"
+	}]
+

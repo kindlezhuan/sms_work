@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UserMapper">    
+    
+    <!-- select 语句，传参一个，返回User对象 。注：select id as id,name as name,pwd as pwd     
+        的as后面的名称要与User类中属性名称要一一对应 -->    
+    <select id="getUserByName" parameterType="String"    
+        resultType="com.hk.sms.model.User">    
+        select    
+        id as id,name as name,pwd as pwd,validresources as resource     
+        from T_TEST_USER    
+        WHERE NAME = #{name} 
+        and p_c = 1   
+        and zt != 0
+    </select>    
+       <select id="getAllUser"   
+        resultType="java.util.HashMap">    
+        select    
+        name as name,pwd as pwd,validresources as resource     
+        from T_TEST_USER    
+        WHERE 1=1  
+        and p_c = 2 
+        and zt != 0
+    </select>  
+    <insert id="insertUser" parameterType="com.hk.sms.model.User">    
+        insert into    
+        T_TEST_USER(ID,NAME,PWD,AGE,SEX)    
+        values(#{id},#{name},#{pwd},#{age},#{sex})    
+    </insert>    
+        <insert id="addPageUser" parameterType="com.hk.sms.model.User">    
+        insert into    
+        T_TEST_USER(NAME,PWD,P_C,ZT,validresources,CREATETIME)    
+        values(#{name},#{pwd},#{p_c},#{zt},#{resource},STR_TO_DATE(SYSDATE(),'%Y-%m-%d %H:%i:%s'))    
+    </insert>  
+        <select id="getUser"   
+        parameterType="java.util.HashMap" resultType="com.hk.sms.model.User">    
+        select    
+        id as id,name as name,pwd as pwd,validresources as resource    
+        from T_TEST_USER    
+        WHERE 1=1   
+        and name= #{name}
+        and pwd= #{pwd}
+        and p_c = 1 
+        and zt != 0
+    </select>  
+        <select id="getaUser"   
+        parameterType="java.util.HashMap" resultType="com.hk.sms.model.User">    
+        select    
+        id as id,name as name,pwd as pwd,validresources as resource    
+        from T_TEST_USER    
+        WHERE 1=1   
+       	<if test="userid!=null">
+  			<![CDATA[and id = #{userid} ]]>
+		</if>
+        and p_c = 1 
+        and zt != 0
+    </select>  
+    	<select id="queryuserCount" resultType="java.lang.Integer"
+		parameterType="HashMap">
+		select count(1) as totalCount
+		from T_TEST_USER 
+		where 1=1
+		and zt != 0
+		<if test="beginTime!=null">
+  			<![CDATA[and createTime >= #{beginTime} ]]>
+		</if>
+		<if test="endTime!=null">
+			<![CDATA[and createTime <= #{endTime} ]]>
+		</if>
+		<if test="userName!=null">
+			<![CDATA[and NAME like CONCAT('%', #{userName}, '%') ]]>
+		</if>
+		<if test="userName1!=null">
+			<![CDATA[and NAME = #{userName1} ]]>
+		</if>
+		<if test="p_c!=null">
+		<![CDATA[ and p_c = #{p_c} ]]>
+		order by id
+		</if>
+	</select>
+	<select id="queryuser" resultType="HashMap"
+		parameterType="HashMap">
+	select id as userID,name as userName,createTime as createTime,validresources as resource 
+		from T_TEST_USER 
+		where 1=1
+		and zt != 0
+		<if test="beginTime!=null">
+  			<![CDATA[and createTime >= #{beginTime} ]]>
+		</if>
+		<if test="endTime!=null">
+			<![CDATA[and createTime <= #{endTime} ]]>
+		</if>
+		<if test="userName!=null">
+			<![CDATA[and NAME like  CONCAT('%', #{userName}, '%') ]]>
+		</if>
+		<if test="p_c!=null">
+		<![CDATA[ and p_c = #{p_c} ]]>
+		</if>
+		ORDER BY id
+		<if test="start!=null and end!=null">
+		<![CDATA[ limit #{start},#{end} ]]>
+		</if>
+	</select>
+	<update id="deleteUser"  parameterType="HashMap">
+		update  t_test_user 
+		set zt = 0   
+		where 1=1 
+  		and id = #{userid}
+
+	</update>
+		<update id="updateUser"  parameterType="com.hk.sms.model.User">
+		update  t_test_user 
+		set
+		id = #{id} 
+		<if test="name !=null and name != ''" >
+		<![CDATA[ ,name = #{name} ]]>
+		</if>
+		<if test="pwd !=null and pwd != ''" >
+		<![CDATA[ ,pwd = #{pwd} ]]>
+		</if>
+		<if test="resource !=null" >
+		<![CDATA[ ,validresources = #{resource}]]>
+		</if>
+
+		where 1=1 
+		and id = #{id}
+
+	</update>
+	
+	  <resultMap id="MenuResult" type="com.hk.sms.model.Menu">  
+        <result property="tid" column="t_id" />  
+        <result property="text" column="text" />  
+        <result property="leaf" column="leaf" javaType="Boolean" jdbcType="CHAR"/>  
+        <result property="parentId" column="parent_id" />  
+    </resultMap> 
+	<select id="getTreeMenu" resultMap="MenuResult"
+		parameterType="HashMap">
+		select * from(
+		select g_id as t_id,g_name as text,leaf,parentid as parent_id  
+        from g_form_back  
+        where 1=1  
+        and  uid = #{uid} or uid = 0
+		) a
+		where 1=1
+         <choose>  
+            <when test="t_id!=null and t_id!=''">  
+                and a.parent_id = #{t_id}  
+            </when>  
+            <otherwise>  
+                and a.parent_id is null  
+            </otherwise>  
+        </choose>  
+	</select>
+	<!-- 联系人查询  begin-->
+	<!-- 查询所有联系人 -->
+	<select id="queryLXRALLusercount" resultType="java.lang.Integer"
+		parameterType="HashMap">
+		SELECT count(1) as totalCount 
+		FROM l_form 
+		where 1=1 and u_id = #{uid}
+		<if test="LName!=null">
+			<![CDATA[and L_name like CONCAT('%', #{LName}, '%') ]]>
+		</if>
+		<if test="LPhone!=null">
+			<![CDATA[and L_phone like CONCAT('%', #{LPhone}, '%') ]]>
+		</if>
+		order by L_id
+	</select>
+	<!-- 1 -->
+	<select id="queryLXRALLuser" resultType="HashMap"
+		parameterType="HashMap">
+				SELECT *
+		FROM l_form 
+		where 1=1 and u_id = #{uid}
+		<if test="LName!=null">
+			<![CDATA[and L_name like CONCAT('%', #{LName}, '%') ]]>
+		</if>
+		<if test="LPhone!=null">
+			<![CDATA[and L_phone like CONCAT('%', #{LPhone}, '%') ]]>
+		</if>
+		order by L_id
+	</select>
+	<!-- 查询分组联系人 -->
+	
+	
+	
+	<select id="queryLusercount" resultType="java.lang.Integer"
+		parameterType="HashMap">
+		SELECT count(1) as totalCount FROM (
+SELECT L_name as lname,L_phone as lphone,g_name as ugroup,g_id as gid,l_id as id,L_email as email from (SELECT * FROM l_form where 1=1 and u_id = #{uid} )a LEFT JOIN ( SELECT * FROM gf_form c, (SELECT * FROM g_form_back 
+where 1=1 and uid = #{uid} OR uid = 0) d 
+where 1=1 and c.gid = d.G_id ) b on a.L_id = b.Lid 
+order by L_id )kk
+WHERE 1=1 
+<if test="LName!=null">
+			<![CDATA[and kk.lname like CONCAT('%', #{LName}, '%') ]]>
+</if>
+<if test="LPhone!=null">
+			<![CDATA[and kk.lphone like CONCAT('%', #{LPhone}, '%') ]]>
+</if>
+<if test="Gid==1">
+			<![CDATA[and kk.gid is null]]>
+</if>
+<if test="Gid !=1 and Gid !=null  and Gid != 0">
+			<![CDATA[and kk.gid = #{Gid}]]>
+</if>
+	</select>
+	
+	<select id="queryLuser" resultType="HashMap"
+		parameterType="HashMap">
+		
+		SELECT * FROM (
+SELECT L_name as lname,L_phone as lphone,g_name as ugroup,g_id as gid,l_id as id,L_email as email from (SELECT * FROM l_form where 1=1 and u_id = #{uid} )a LEFT JOIN ( SELECT * FROM gf_form c, (SELECT * FROM g_form_back 
+where 1=1 and uid = #{uid} OR uid = 0) d 
+where 1=1 and c.gid = d.G_id ) b on a.L_id = b.Lid 
+order by L_id )kk
+WHERE 1=1 
+<if test="LName!=null">
+			<![CDATA[and kk.lname like CONCAT('%', #{LName}, '%') ]]>
+</if>
+<if test="LPhone!=null">
+			<![CDATA[and kk.lphone like CONCAT('%', #{LPhone}, '%') ]]>
+</if>
+<if test="Gid==1">
+			<![CDATA[and kk.gid is null]]>
+</if>
+<if test="Gid !=1 and Gid !=null  and Gid != 0">
+			<![CDATA[and kk.gid = #{Gid}]]>
+</if>
+		
+	</select>
+	<!-- 查询未分组联系人 -->
+		<select id="queryLXRFenzuusercount" resultType="java.lang.Integer"
+		parameterType="HashMap">
+		SELECT count(1) as totalCount FROM l_form where 1=1 and u_id =  #{uid} and L_id not IN(SELECT Lid as L_ID from
+		(
+		SELECT 
+		*
+		FROM 
+		gf_form c,
+		(SELECT * FROM g_form_back where 1=1 and uid = #{uid} OR uid = 0) d 
+		where 1=1 and c.gid = d.G_id 
+		) b
+		LEFT JOIN 		(SELECT * FROM l_form where 1=1 and u_id =  #{uid} )a
+		on a.L_id = b.Lid)
+		<if test="LName!=null">
+			<![CDATA[and L_name like CONCAT('%', #{LName}, '%') ]]>
+		</if>
+		<if test="LPhone!=null">
+			<![CDATA[and L_phone like CONCAT('%', #{LPhone}, '%') ]]>
+		</if>
+		order by L_id
+	</select>
+	<select id="queryLXRFenzuuser" resultType="HashMap"
+		parameterType="HashMap">
+		SELECT * FROM l_form where 1=1 and u_id =  #{uid} and L_id not IN(SELECT Lid as L_ID from
+		(
+		SELECT 
+		*
+		FROM 
+		gf_form c,
+		(SELECT * FROM g_form_back where 1=1 and uid = #{uid} OR uid = 0) d 
+		where 1=1 and c.gid = d.G_id 
+		) b
+		LEFT JOIN 		(SELECT * FROM l_form where 1=1 and u_id =  #{uid} )a
+		on a.L_id = b.Lid)
+		<if test="LName!=null">
+			<![CDATA[and L_name like CONCAT('%', #{LName}, '%') ]]>
+		</if>
+		<if test="LPhone!=null">
+			<![CDATA[and L_phone like CONCAT('%', #{LPhone}, '%') ]]>
+		</if>
+		order by L_id
+	</select>
+	<!-- 联系人查询  end-->
+	<!-- 获得分组数据 -->
+	<select id="getFenzuData" resultType="HashMap"
+		parameterType="HashMap">
+		SELECT 
+		g_id as id,g_name as name 
+		FROM g_form_back 
+		where 1=1 and uid = #{uid}
+	</select>
+	<!-- 插入新联系人组 -->
+	<insert id="insertLXRGroup" parameterType="com.hk.sms.model.UserLXRGroup" useGeneratedKeys="true" keyProperty="g_id"> 
+	<![CDATA[INSERT INTO g_form_back(g_name,parentId,leaf,uid) VALUES(#{group_name},#{parentId},#{leaf},#{user_id})]]>   
+    </insert>  
+    	<!-- 插入联系人到联系人组 -->
+	<insert id="insertLXRtoGroup" parameterType="HashMap"> 
+	<![CDATA[INSERT into gf_form(gID,lID) VALUES(#{g_id},#{l_id})]]>   
+    </insert> 
+    <!-- 插入一个联系人 -->
+    <insert id="addLXR" parameterType="com.hk.sms.model.UserLXR" useGeneratedKeys="true" keyProperty="l_id">
+    <![CDATA[INSERT into l_form(L_name,U_id,L_phone,L_email) VALUES(#{lname},#{luid},#{lphone},#{lemail})]]>
+    </insert>
+    <!-- 删除一个联系人 -->
+    <delete id="deleteLXR" parameterType="HashMap">
+    <![CDATA[DELETE L.*,G.* FROM l_form L LEFT JOIN gf_form G ON L.L_id = G.lID  WHERE 1=1 and L_id = #{L_id} ]]>
+    </delete>
+        <!-- 删除一个联系组 -->
+    <delete id="deleteLXRGroup" parameterType="HashMap">
+    <![CDATA[DELETE GB.*,G.* FROM g_form_back GB LEFT JOIN gf_form G ON GB.G_id = G.lID  WHERE 1=1 AND G_id =  #{G_id} ]]>
+    </delete>
+</mapper>  

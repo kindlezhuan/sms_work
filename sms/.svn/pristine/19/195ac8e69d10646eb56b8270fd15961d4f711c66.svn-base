@@ -1,0 +1,10 @@
+package com.hk.sms.dao;
+
+import com.hk.sms.model.SMSLog;
+import com.hk.sms.model.SMSSave;
+
+
+public interface ServerDao {
+	public int saveSMSSave(SMSSave save);  
+	public int saveSMSLog(SMSLog log);
+}

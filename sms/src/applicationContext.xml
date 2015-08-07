@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"   
+       xmlns:aop="http://www.springframework.org/schema/aop"   
+       xmlns:context="http://www.springframework.org/schema/context"  
+       xmlns:mvc="http://www.springframework.org/schema/mvc"   
+       xmlns:tx="http://www.springframework.org/schema/tx"   
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/aop   
+        http://www.springframework.org/schema/aop/spring-aop-3.2.xsd   
+        http://www.springframework.org/schema/beans   
+        http://www.springframework.org/schema/beans/spring-beans-3.2.xsd   
+        http://www.springframework.org/schema/context   
+        http://www.springframework.org/schema/context/spring-context-3.2.xsd   
+        http://www.springframework.org/schema/mvc   
+        http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd   
+        http://www.springframework.org/schema/tx   
+        http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd"  
+         default-autowire="byName">
+         
+    <!-- 解析注解注入 -->
+    <context:annotation-config></context:annotation-config>
+    
+    <!--  开启这个配置，spring才能识别@Scheduled注解(定时任务配置参见["http://gong1208.iteye.com/blog/1773177"]）   --> 
+    <task:annotation-driven scheduler="qbScheduler" mode="proxy"/>  
+    <task:scheduler id="qbScheduler" pool-size="1"/>  
+    
+	
+	
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list><value>classpath:jdbc.properties</value></list>
+        </property>
+    </bean>
+   	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="${jdbc.driverClassName}"></property>
+		<property name="url" value="${jdbc.url}"></property>
+		<property name="username" value="${jdbc.username}"></property>
+		<property name="password" value="${jdbc.password}"></property>
+		<property name="maxActive" value="${jdbc.maxActive}"></property>
+		<property name="initialSize" value="${jdbc.initialSize}"></property>
+		<property name="maxWait" value="${jdbc.maxWait}"></property>
+		<property name="minIdle" value="${jdbc.minIdle}"></property>
+	</bean>
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:sqlMapConfigMybatis.xml"></property>
+	</bean>
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+    <!-- JDBC事务管理器 -->
+    <bean id="jdbcManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">  
+       <property name="dataSource" ref="dataSource"/>  
+    </bean>
+    <!-- 自动扫描controller包下的所有 @Controller @Service @Repository @component组件，使其加入spring容器    -->
+	<context:component-scan base-package="com.hkay.weifei">
+	   <context:include-filter type="regex" expression="com.hk.sms.action..*" />
+	   <context:include-filter type="regex" expression="com.hk.sms.dao..*"/>
+	   <context:include-filter type="regex" expression="com.hk.sms.util..*"/>
+	</context:component-scan>
+	<!-- 配置事务的传播特性 -->
+	<tx:advice id="txAdvice" transaction-manager="jdbcManager">
+		<tx:attributes>
+			<tx:method name="save*" propagation="REQUIRED" />
+			<tx:method name="insert*" propagation="REQUIRED" />
+			<tx:method name="delete*" propagation="REQUIRED"/>
+			<tx:method name="update*" propagation="REQUIRED"/>
+			<tx:method name="process*" propagation="REQUIRED"/>
+			<tx:method name="*" read-only="true"/>
+		</tx:attributes>
+	</tx:advice>
+	<bean id="abstractDao" abstract="true">    
+        <property name="sqlSessionFactory" ref="sqlSessionFactory" />    
+    </bean>   
+    <bean id="serverDao" class="com.hk.sms.dao.impl.ServerDaoImpl" >
+    	<property name="sqlSessionFactory" ref="sqlSessionFactory" /> 
+	</bean> 
+    <bean id="userDao"   class="com.hk.sms.dao.impl.UserDaoImpl" >      
+    	<property name="sqlSessionFactory" ref="sqlSessionFactory" /> 
+    </bean>
+    <bean id="result"   class="com.hk.sms.constant.RetAjaxFlags" >      
+    </bean>
+    <bean id="SpringContextUtil"   class="com.hk.sms.utils.SpringContextUtil" scope="singleton" />   
+    <bean id="QueueUtil"   class="com.hk.sms.utils.QueueUtil" scope="singleton" />    
+    <bean id="ThreadPoolUtil"   class="com.hk.sms.utils.ThreadPoolUtil" scope="singleton" />  
+    <bean id="split" class = "com.hk.sms.utils.PageSplit" scope="singleton" />
+</beans>

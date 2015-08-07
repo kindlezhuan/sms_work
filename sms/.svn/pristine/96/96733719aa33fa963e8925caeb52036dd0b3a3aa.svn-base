@@ -1,0 +1,33 @@
+@charset "utf-8";
+/* CSS Document */
+*{margin:0 auto;padding:0;}
+body{font-size:14px;color:#333;line-height:18px;}
+a,a:hover{text-decoration:none;color:red;}
+img{border:none;}
+ul,li,dl,dt,dd{list-style:none;}
+
+
+.title{height:58px;background:url(../images/dxpt_Bg.gif) repeat-x;}
+.titleleft{background:url(../images/dxpt_ico.gif) no-repeat;width:111px;height:58px;float:left;}
+.titleleft{padding-left:40px; font-size:14px; font-weight:bold; color:#fff; line-height:58px;}
+
+.TabTitle{width:100%;}
+.TabTitle td{background:url(../images/TitleBg2.gif) repeat-x;height:36px;color:#fff; text-align:center; vertical-align:middle;}
+
+.Content{border:solid 1px #7ed3ee; width:100%;margin-top:5px;}
+.Content td{ padding:3px; text-align:center}
+.tentShow{width:98%; margin-top:10px;}
+.bottomborder{background:url(../images/BottomBorder.gif) repeat-x; height:36px;}
+.tex{padding:5px;}
+.TabBottom{ margin-top:5px; border-collapse:collapse;}
+.TabBottom td{ text-align:center;border:solid 1px #7ed3ee;}
+
+.formText,.formText2{width:90%; margin:10px 20px; height:160px;}
+.formText2{height:32px;}
+.formText3{ width:90%;height:200px;}
+.formText4{ height:83px; width:90%;}
+.formText5{width:38px; margin:2px;}
+.sure{margin-top:8px;}
+
+.foot{height:58px;background:url(../images/dxpt_Bg.gif) repeat-x;}
+

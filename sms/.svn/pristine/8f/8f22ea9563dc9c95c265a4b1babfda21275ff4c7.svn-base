@@ -1,0 +1,149 @@
+	function CallWebService(method, params, onSuccess, onFailure) {
+		    Ext.Ajax.request({
+		        type: "POST",   // 鍙戦�鏁版嵁
+		        url: method,    // WebService 鍦板潃鍜屾柟娉�
+		        params: params,
+		        success: onSuccess,
+		        failure: onFailure  //鎵ц澶辫触
+		    });
+	};
+	var f;
+Ext.onReady(function () { 
+	Ext.QuickTips.init();
+	
+	var form = Ext.create("Ext.form.Panel", {
+		width: 660,
+		height:350,
+    	url: 'firstPage/zf_toSaveNotice.do', 
+        id: 'noticeForm',
+        bodyPadding: 10,
+        buttonAlign: 'center',
+        border:0,
+        items: [{
+        	xtype:'label',
+        	text:'12'
+        },
+                {
+		            xtype: 'textfield',
+		            id: 'ggbt',
+		            name: 'notice.ggbt',
+		            width: 575,
+		            fieldLabel: '',
+		            allowBlank: false,
+		            labelAlign: 'right'
+		        },{
+		        	xtype:'label',
+		        	text:'12'
+		        },{
+		        	xtype: "htmleditor",
+		            id: 'ggnr',
+		            name: 'notice.ggnr',
+		            width: 575,
+		            height:235,
+		            padding:'10 0 0 0',
+		            fieldLabel: '',
+		            allowBlank: false,
+		            enableColors: false,
+		            enableAlignments: false,
+		            labelAlign: 'right'
+		        }
+                ],
+                buttons: [{
+                	id:'ann',
+                    text: '鎻愪氦',
+                   type: 'buttton',
+                    handler: function () {
+                        addNoticeAction();
+                     }
+                }]
+    	 });
+	var viewport = new Ext.Viewport({
+       items: [form]
+    });
+    viewInit();
+});
+// 鍒濆鍖�
+function viewInit(){
+	var pageFlg = document.getElementById("pageFlg").value;
+	// 淇敼
+	if(pageFlg=="upNotice"){
+		var ggid = document.getElementById("ggid").value;
+		
+		  CallWebService('firstPage/fp_queryNotifyDetail.do', {'ggid':ggid}, function(request, options){
+		  	 var result = request.responseText;
+     	 var requestText = eval("("+result+")");
+     		 var data = requestText.data;
+		  	//璧嬪�
+		  	Ext.getCmp("ggbt").setValue(data.ggbt);
+			Ext.getCmp("ggnr").setValue(data.ggnr);
+			 	
+		  } , null);
+		 
+	}
+}
+function addNoticeAction(){
+	var pageFlg = document.getElementById("pageFlg").value;
+	  if (Ext.getCmp("ggbt").getValue().trim().length < 1) {
+          Ext.MessageBox.alert("鎻愮ず", "鍏憡鏍囬涓嶈兘涓虹┖!", function () { Ext.getCmp("ggbt").focus();});
+          return false;
+      }
+	  if (Ext.getCmp("ggnr").getValue().trim().length < 1) {
+          Ext.MessageBox.alert("鎻愮ず", "鍏憡鍐呭涓嶈兘涓虹┖!", function () { Ext.getCmp("ggnr").focus();});
+          return false;
+	  
+	  }
+	  if(pageFlg=="addNotice"){
+	  var jsonNotice ={'notice.ggbt':Ext.getCmp("ggbt").getValue().trim(),'notice.ggnr':Ext.getCmp("ggnr").getValue().trim()};
+	  CallWebService('firstPage/zf_toSaveNotice.do', jsonNotice, onSuccess, onFailure);
+	 }else{
+	 var ggid = document.getElementById("ggid").value;
+	 var jsonNotice1={'notice.ggbt':Ext.getCmp("ggbt").getValue().trim(),'notice.ggnr':Ext.getCmp("ggnr").getValue().trim(),'notice.ggid':ggid};
+
+	  CallWebService('firstPage/zf_toupNotice.do', jsonNotice1, function onSuccess2(request, options){
+	   var result = request.responseText;
+      var requestText = eval("("+result+")");
+      var msg_no = requestText.msg_no;
+      switch (msg_no) {
+      case "0":
+    	  parent.Ext.MessageBox.alert("鎻愮ず", "鎻愪氦鎴愬姛锛�);
+			parent.win.hide();
+			parent.frames["content"].store1.reload();
+    	  break;
+      default:
+    	     parent.Ext.Msg.alert("鎻愮ず", "淇敼澶辫触!");
+    	    loadflag = false;
+    	    break;
+    }
+	  	
+	  }, onFailure);
+	 }
+}
+
+function onSuccess(request, options) {
+	 var result = request.responseText;
+      var requestText = eval("("+result+")");
+      var msg_no = requestText.msg_no;
+      switch (msg_no) {
+      case "0":
+    	 
+ 		parent.Ext.MessageBox.alert("鎻愮ず", "鎻愪氦鎴愬姛锛�);
+			parent.win.hide();
+			parent.frames["content"].store1.reload();
+    	  break;
+      default:
+    	    parent.Ext.Msg.alert("鎻愮ず", "鍙戝竷澶辫触!");
+    	    loadflag = false;
+    	    break;
+    }
+
+    
+}
+
+function onFailure(request, options) {
+	Ext.Msg.alert("閿欒", "杩炴帴鏈嶅姟鍣ㄥけ璐�");
+}
+       
+
+
+
+ 

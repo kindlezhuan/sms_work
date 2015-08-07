@@ -1,0 +1,11 @@
+﻿[{
+    text: '危废转移',
+    leaf: true,
+    qtitle: "vehicleManage/vm_toWfzy.do"
+    
+},{
+    text: '污泥转移',
+    leaf: true,
+    qtitle: "vehicleManage/vm_toWnzy.do"
+    
+}]

@@ -1,0 +1,10 @@
+﻿[{
+    text: '用户管理',
+    leaf: true,
+    qtitle: "firstPage/zf_toUserList.do"
+},
+{
+    text: '字典管理',
+    leaf: true,
+    qtitle: "firstPage/zd_showSysDictionary.do"
+}]

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SMS>
+<!-- 系统时间+短信信息的MD5值 -->
+<TimeMsg_ID>972CC768F53B7F78CBF60D97437C4D53</TimeMsg_ID>
+<!-- 用户名 -->
+<UID>wj2207</UID>
+<!-- 密码 -->
+<UPWD>2dcv001</UPWD>
+<!-- 手机号 -->
+<MOBILE>13732264640</MOBILE>
+<!-- 短信内容 -->
+<MSG> 13732264640 收到给我一条短信。</MSG>
+</SMS>

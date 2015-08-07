@@ -1,0 +1,26 @@
+package com.hk.sms.dao.impl;
+
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+import org.springframework.stereotype.Repository;
+
+import com.hk.sms.dao.ServerDao;
+import com.hk.sms.model.SMSLog;
+import com.hk.sms.model.SMSSave;
+@Repository(value = "serverDao") 
+public class ServerDaoImpl extends SqlSessionDaoSupport implements ServerDao{
+
+	@Override
+	public int saveSMSSave(SMSSave save) {
+		int result = getSqlSession().insert("ServerMapper.insertSave",save);
+		System.out.println(save.getSavetime());
+		System.out.println(save.getSend_time());
+		return result;
+	}
+
+	@Override
+	public int saveSMSLog(SMSLog log) {
+		int result = getSqlSession().insert("ServerMapper.insertLog",log);
+		return result;
+	}
+
+}

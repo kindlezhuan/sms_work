@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!--视频点送: videoSend-->
+<videoSend>
+    <header>
+        <sid>%s</sid>
+        <type>service</type>
+    </header>
+    <service name="videoSend">
+    <fromNum>%s</fromNum>    
+    <toNum>%s</toNum>                   <!--需要接通的用户的电话号码 -->
+    <videoPath>%s</videoPath>           <!--视频文件路径 -->
+    <chargeNumber>%s</chargeNumber>     <!--计费号码 -->
+    </service>
+</videoSend>

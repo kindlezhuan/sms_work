@@ -1,0 +1,96 @@
+<%@ page contentType="text/html; charset=GBK"%>
+<jsp:directive.page import="java.util.List"/>
+<%@ taglib uri="/WEB-INF/framework-ogm.tld" prefix="eaf" %>
+<%
+String path = request.getContextPath();
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>用户短信发送设置</title>
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<link rel="stylesheet" href="../../../style/css.css">
+<link rel="stylesheet" href="../../../style/hotmail.css">
+<script type="text/javascript" src="<%=path %>/js/common.js"></script>
+<script type="text/javascript" src="<%=path %>/dwr/interface/DwrService.js"></script>
+<script type="text/javascript" src="<%=path %>/dwr/engine.js"></script>
+<script type="text/javascript" src="<%=path %>/dwr/util.js"></script>
+<script type="text/javascript" src="<%=path %>/js/page_init.js"></script>
+<jsp:include flush="true" page="../../../common_head.jsp"></jsp:include>
+<script type="text/javascript">
+function modifyUser(userId){
+	if(userId != ""){
+		window.location = "SendSetAction.do?action=showInfo&staffId=" + userId;
+	}
+}
+function initPage(){
+	
+}
+</script>
+</head>
+<body onload="initPage();">
+<eaf:label/>
+<br/>
+<form name="searchForm" action="SendSet.do" method="post">
+<table class="mainTable">
+  <tbody>
+    <tr>
+      <td colspan="7" class="yi_hang_4">用户查询</td>
+    </tr>
+    <tr>
+      <td width="10%"><strong>用户账号</strong></td>
+      <td width="20%">
+        <input type="text" name="staffId" value="1"/>
+      </td>
+      <td width="10%"><strong>用户名</strong></td>
+      <td width="20%"><input type="text" name="staffName" value="1"/></td>
+			<td align="right">
+        <input type="submit" value="查询" class="button"/>
+        <input type="reset" value="清空" class="button" />
+      </td>
+    </tr>
+  </tbody>
+</table>
+</form>
+<br/>
+<table width="95%" cellpadding="0" cellspacing="0" align="center">
+  <tbody>
+    <tr>
+      <td align="center">
+        <ec:table items="recordList" var="record"
+			retrieveRowsCallback="limit" sortRowsCallback="limit"
+			action="SendSet.do" xlsFileName="用户发送设置.xls" classic="true" showPrint="true"
+			useAjax="false" width="100%" pageSizeList="10,20,50,100,all"
+			rowsDisplayed="10" sortable="true">
+          <ec:row>
+            <ec:column width="5%" property="-" title="<input type='checkbox' onclick='checkAll(this.form);'/>" style="text-align:center" sortable="false">
+          	  <input type="checkbox" name="userId" value="${record.STAFF_ID }"/>
+          	</ec:column>
+            <ec:column width="20%" property="REAL_NAME" title="用户名" style="text-align:center"/>
+            <ec:column width="10%" property="SUMNUM" title="总发送量" style="text-align:center"/>
+            <ec:column width="10%" property="BEGINTIME" title="开始时间" style="text-align:center"/>
+            <ec:column width="10%" property="ENDTIME" title="结束时间" style="text-align:center"/>
+            <ec:column width="10%" property="PERDAYNUM" title="每日发送条数" style="text-align:center"/>
+            <ec:column width="5%" property="EXT1" title="状态" style="text-align:center">
+            	<script>
+            			document.write("正常");
+            	</script>         	
+            </ec:column>
+            <ec:column width="5%" property="+" title="操作" style="text-align:center;" sortable="false">
+              <a href="javascript:modifyUser(${record.STAFF_ID });">修改</a>
+            </ec:column>
+          </ec:row>
+        </ec:table>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td></td>
+    </tr>
+  </tfoot>
+</table>
+</body>
+</html>

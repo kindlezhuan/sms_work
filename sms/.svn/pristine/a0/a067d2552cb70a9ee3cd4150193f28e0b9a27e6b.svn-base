@@ -1,0 +1,16 @@
+﻿ [{
+        text: '出库入库',
+        leaf: true,
+       /* qtitle: "cl_crk/cc_toCrkPage.do"*/
+         qtitle: " czqy/czqy_ckrk.do"
+        //qtitle: "czqy/czqy_ckrk.do"
+    }/*,{
+        text: '危废转移',
+        leaf: true,
+        qtitle: "cl_crk/cc_toCrkPage.do"
+        //qtitle: "czqy/czqy_jlb.do"
+    },{
+        text: '污泥转移',
+        leaf: true,
+        qtitle: "czqy/czqy_wnzy.do"
+    }*/]

@@ -1,0 +1,38 @@
+$(function(){
+	var theUl;//引用单击标题后面的UL元素
+	var theID;//引用单击标链接的ID
+	$("#group_user_list h1 a").toggle(function(){
+		theID=$(this).attr('id');
+		theUl=$(this).parent().next();
+		$(theUl).empty();
+		$(this).parent().css("background-position","10px -30px"); //切换小箭头图标
+
+		//ajax代码开始
+		$().ajaxSend(function(){
+			$(theUl).html("<img src='images/ajax-loader.gif' class='loading' />");
+		});
+		$().ajaxComplete(function(){
+			$(".loading").remove();
+		});
+		$().ajaxError(function(){
+			$(theUl).html("<span style='color:#FF0000;margin-left:40px;'>获取分组用户失败!</span>");
+		});
+
+		$.get("group/groupAction.do?action=getGroupUsers&groupId=" + theID,function(userInfo){
+			$(userInfo).find('user').each(function(){
+				var userName=$(this).find('userName').text();
+				var userTel=$(this).find('userTel').text();
+				var userRemark=$(this).find('userRemark').text();
+				var theLi="<li><a href=\"javascript:void(0);\" alt=\"" + userRemark  + "\" onclick=\"addUser('" + userName  + "','" + userTel + "');\">" + userName + "(" + userTel + ")" + "</a></li>";
+				//alert (theLi);
+				$(theLi).appendTo(theUl);
+			});	
+		}); 
+	
+		//ajax代码结束
+		$(theUl).toggle();//切换书签列表的状态
+	},function(){
+		$(this).parent().css("background-position","10px 0"); //切换小箭头图标
+		$(this).parent().next().slideToggle();//切换书签列表的状态
+	});
+});

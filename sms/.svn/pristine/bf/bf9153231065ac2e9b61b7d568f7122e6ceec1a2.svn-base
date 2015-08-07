@@ -1,0 +1,195 @@
+<%@ page contentType="text/html; charset=GBK"%>
+<%@ include file="../../messager.jsp" %>
+<%@ taglib uri="/WEB-INF/framework-ogm.tld" prefix="eaf" %>
+<%
+String path = request.getContextPath();
+
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>信息发送日志</title>
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<link rel="stylesheet" href="../../../style/css.css">
+<link rel="stylesheet" href="../../../style/hotmail.css">
+<script type="text/javascript" src="<%=path %>/js/common.js"></script>
+<script type="text/javascript" src="<%=path %>/js/calendar.js"></script>
+<script type="text/javascript" src="<%=path %>/js/page_init.js"></script>
+<jsp:include flush="true" page="../../../common_head.jsp"></jsp:include>
+<script type="text/javascript">
+function clearAll(){
+	searchForm.l_number.value = "";
+	searchForm.l_content.value = "";
+	searchForm.startDate.value = "";
+	searchForm.endDate.value = "";
+	searchForm.l_send_flag.selectedIndex = 0;
+	searchForm.l_number.focus();
+}
+function deleteQueues(){
+	var deleteMsgStr = "";
+	var messages = document.getElementsByName("msgId");
+	if(messages != null && messages.length > 0){
+		for(var i=0; i<messages.length; i++){
+			if(messages[i].checked){
+				deleteMsgStr = deleteMsgStr + messages[i].value + ",";
+			}
+		}
+		if(deleteMsgStr == ""){
+			alert("请选择要删除的信息！");
+			return;
+		}else{
+			if(confirm("确定要删除这些发送任务吗？")){
+				window.location = "sendQueueAction.do?action=deleteMessages&messages=" + deleteMsgStr;
+			}
+		}
+	}
+}
+
+function deleteSentQueues(){
+	if(confirm("确定要删除所有已发送的信息吗？")){
+		window.location = "sendQueueAction.do?action=deleteSentQueues";
+	}
+}
+
+function sendAgainAll(){
+	var sendMsgStr = "";
+	var messages = document.getElementsByName("msgId");
+	if(messages != null && messages.length > 0){
+		for(var i=0; i<messages.length; i++){
+			if(messages[i].checked){
+				sendMsgStr = sendMsgStr + messages[i].value + ",";
+			}
+		}
+		if(sendMsgStr == ""){
+			alert("请选择要重发的信息！");
+			return;
+		}else{
+			if(confirm("确定要重发选中的这些发送任务吗？")){
+				window.location = "sendQueueAction.do?action=sendAgain&idlist=" + sendMsgStr;
+			}
+		}
+	}
+}
+function sendAgain(msg_id){
+	if(confirm("确定要重发该信息吗？")){
+		window.location = "sendQueueAction.do?action=sendAgain&idlist=" + msg_id + ",";
+	}
+}
+
+function initPage(){
+	selectInit("l_send_flag", "1");
+}
+</script>
+</head>
+<body onload="initPage();">
+<eaf:label/>
+<table width="95%" align="center">
+  <tr align="right">
+    <td align="right">
+      <input type="button" value="重发信息" class="button" style="width: 80;" onclick="sendAgainAll();"/>
+      <input type="button" value="删除任务" class="button" style="width: 80;" onclick="deleteQueues();"/>
+      <!-- <input type="button" value="删除已发送" class="button" style="width: 80;" onclick="deleteSentQueues();"/> -->
+    </td>
+  </tr>
+</table>
+<form name="searchForm" action="queryForSendQueues.do" method="post">
+<table class="mainTable">
+  <tbody>
+    <tr>
+      <td colspan="7" class="yi_hang_4">发送队列信息查询</td>
+    </tr>
+    <tr>
+      <td width="10%"><strong>被叫号码</strong></td>
+      <td width="15%"><input type="text" name="l_number" value="1"/></td>
+      <td width="10%"><strong>信息内容</strong></td>
+      <td width="15%"><input type="text" name="l_content" value="1"/></td>
+      <td width="10%"><strong>发送状态</strong></td>
+      <td width="15%">
+      	<select id="l_send_flag" name="l_send_flag">
+     	  <option value="">全部</option>
+     	  <option value="1">待发送</option>
+     	  <option value="2">已发送</option>
+     	  <option value="3">待重发</option>
+      	</select>
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td width="10%"><strong>开始时间</strong></td>
+      <td width="20%">
+        <input type="text" id="startDate" name="startDate" value="1" onfocus="calendar();" readonly="readonly"/>
+      </td>
+      <td width="10%"><strong>截止时间</strong></td>
+      <td width="20%">
+        <input type="text" id="endDate" name="endDate" value="1" onfocus="calendar();" readonly="readonly"/>
+      </td>
+      <td></td>
+      <td></td>
+      <td align="right">
+        <input type="submit" value="查询" class="button"/>
+        <input type="button" value="清空" class="button" onclick="clearAll();"/>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</form>
+<br/>
+<table width="95%" cellpadding="0" cellspacing="0" align="center">
+  <tbody>
+    <tr>
+      <td align="center">
+        <ec:table items="recordList" var="record"
+			retrieveRowsCallback="limit" sortRowsCallback="limit"
+			action="queryForSendQueues.do" xlsFileName="信息发送日志.xls" classic="true" showPrint="true"
+			useAjax="false" width="100%" pageSizeList="10,20,50,100,all"
+			rowsDisplayed="10" sortable="true">
+          <ec:row>
+          	<ec:column width="5%" property="+" title="<input type='checkbox' onclick='checkAll(this.form);'/>" style="text-align:center" sortable="false">
+          	  <input type="checkbox" name="msgId" value="${record.MSG_ID }"/>
+          	</ec:column>
+            <ec:column width="10%" property="MSG_CALLED_NUMBER" title="被叫号码" style="text-align:center"/>
+            <ec:column property="MSG_CONTENT" title="信息内容" >
+            	<a title="${record.MSG_CONTENT }">${record.SUBMESSAGE }</a>
+            </ec:column>
+            <ec:column width="10%" property="ADD_TIME" title="加入时间" cell="date" format="yyyy-MM-dd HH:mm" style="text-align:center"/>
+            <ec:column width="10%" property="MSG_SEND_TIME" title="发送时间" cell="date" format="yyyy-MM-dd HH:mm" style="text-align:center"/>
+            <ec:column width="8%" property="SEND_FLAG" title="发送状态" editTemplate="SendFlagMapTemplet" mappingItem="sendFlagMap" style="text-align:center"/>
+            <ec:column width="10%" property="REAL_NAME" title="发送人" style="text-align:center"/>
+            <ec:column width="80" property="SEND_RESULT" title="发送结果" style="text-align:center">
+            	<script>
+            		if("" == "${record.SEND_RESULT }")
+            			document.write("&nbsp;");
+            		else if("messageSuccess" == "${record.SEND_RESULT }")
+            			document.write("发送成功");
+            		else
+            			document.write("<a title='${record.SEND_RESULT }' style='color:red;'>发送失败</a>");
+            	</script>
+            </ec:column>
+            <ec:column width="5%" property="-" title="操作" style="text-align:center" sortable="false">
+            	<script>
+            		if("${record.SEND_FLAG }"==1 && "${record.SEND_RESULT }"!="messageSuccess")
+            			document.write("<a href='javascript:sendAgain(${record.MSG_ID });' style='color:red;'>重发</a>");
+            		else
+            			document.write("&nbsp;");
+            	</script>
+            </ec:column>
+          </ec:row>
+        </ec:table>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td></td>
+    </tr>
+  </tfoot>
+</table>
+<textarea rows="0" cols="0" style="display: none;">
+	<select name="SendFlagMapTemplet">
+		<ec:options items="sendFlagMap"/>
+	</select>
+</textarea>
+</body>
+</html>

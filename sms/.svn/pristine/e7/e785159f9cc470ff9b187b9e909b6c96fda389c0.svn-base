@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ServerMapper">    
+    <!-- 插入Save记录 --> 
+    <insert id="insertSave" parameterType="com.hk.sms.model.SMSSave">    
+         INSERT INTO sms_info(TimeMsg_ID,UID,MOBILE,MSG,GateWay,Send_result,Send_time,savetime) VALUES(
+         #{TimeMsg_ID},#{UID},#{MOBILE},#{MSG},#{GateWay},#{Send_result},STR_TO_DATE(#{Send_time},'%Y-%m-%d %H:%i:%s'),STR_TO_DATE(#{savetime},'%Y-%m-%d %H:%i:%s'))
+    </insert>  
+     
+    <!-- 插入Log记录 -->  
+    <insert id="insertLog" parameterType="com.hk.sms.model.SMSLog">    
+          INSERT INTO sms_log(TimeMsg_ID,UID,MOBILE,MSG,GateWay,Send_result,Get_time,Send_time,savetime,savetime_log) 
+		  VALUES(#{TimeMsg_ID},#{UID},#{MOBILE},#{MSG},#{GateWay},#{Send_result},STR_TO_DATE(#{Get_time},'%Y-%m-%d %H:%i:%s'),STR_TO_DATE(#{Send_time},'%Y-%m-%d %H:%i:%s'),STR_TO_DATE(#{savetime},'%Y-%m-%d %H:%i:%s'),STR_TO_DATE(SYSDATE(),'%Y-%m-%d %H:%i:%s'))
+    </insert>    
+</mapper>  

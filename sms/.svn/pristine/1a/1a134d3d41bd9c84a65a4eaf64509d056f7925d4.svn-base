@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>短信发送</title>
+<link href="css/css.css"  rel="stylesheet" type="text/css" />
+</head>
+<body>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="title">
+  <tr>
+    <td class="titleleft">短信发送</td>
+  </tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="TabTitle">
+  <tr>
+    <td width="10%" >号码</td>
+    <td width="2%">
+      <input name="" type="checkbox" value="" />
+    </td>
+    <td width="9%">固定号码</td>
+    <td width="2%">
+      <input name="" type="checkbox" value="" />
+    </td>
+    <td width="11%">回复转发至手机</td>
+    <td width="2%">
+      <input name="" type="checkbox" value="" />
+    </td>
+    <td width="12%">结果通知至手机共</td>
+    <td width="4%">
+      <select name="">
+      </select>
+    </td>
+    <td width="1%">次</td>
+    <td width="4%">
+      <select name="">
+      </select>
+    </td>
+    <td width="43%" style=" text-align:left;">次</td>
+  </tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="Content">
+  <tr>
+    <td width="77%" rowspan="2">
+      <textarea name="textarea" class="formText"></textarea>
+    </td>
+    <td width="23%">
+      <input type="image" name="imageField" src="images/ImgButton.gif" />
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input type="image" name="imageField" src="images/serve.gif"/>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <textarea name="textarea" class="formText2"></textarea>
+    </td>
+    <td>
+      <input type="checkbox" name="checkbox" value="checkbox"/>
+      发给自己 </td>
+  </tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="tentShow">
+  <tr>
+    <td>
+      <input name="" type="image" src="images/ImgButton2.gif" />
+    </td>
+    <td width="87%" class="bottomborder">在群发短信内容前或中间，插入“接收者姓名”，这样在发送到手机后， 会在短信中相应位置替换接收者的
+      姓名，使短信内容更有针对性。</td>
+  </tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="Content">
+  <tr>
+    <td width="53%" >内容：</td>
+    <td width="47%">第一条</td>
+  </tr>
+  <tr>
+    <td rowspan="3">
+      <textarea name="textarea" class="formText3"></textarea>
+    </td>
+    <td>
+      <textarea name="textarea" class="formText4"></textarea>
+    </td>
+  </tr>
+  <tr>
+    <td class="tex">第二条</td>
+  </tr>
+  <tr>
+    <td>
+      <textarea name="textarea" class="formText4"></textarea>
+    </td>
+  </tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="TabBottom">
+  <tr>
+    <td colspan="2">插入个性签名</td>
+    <td colspan="2">
+      <input name="" type="text" />
+    </td>
+    <td width="7%">发送统计</td>
+    <td width="8%">还能写</td>
+    <td width="5%">
+      <input type="text" name="textfield25" class="formText5" />
+    </td>
+    <td width="7%">个字符</td>
+    <td colspan="2">将分为</td>
+    <td width="5%">
+      <input type="text" name="textfield222" class="formText5"/>
+    </td>
+    <td width="8%">条短信发送</td>
+    <td colspan="3">&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="9%">发送时间</td>
+    <td width="3%">
+      <input type="radio" name="radiobutton" value="radiobutton" />
+    </td>
+    <td width="7%">立即发送</td>
+    <td width="16%">
+      <input type="radio" name="radiobutton" value="radiobutton" />
+    </td>
+    <td>定时发送</td>
+    <td>
+      <input type="text" name="textfield" class="formText5" />
+    </td>
+    <td>年</td>
+    <td>
+      <input type="text" name="textfield2" class="formText5" />
+    </td>
+    <td width="4%">月</td>
+    <td width="7%">
+      <input type="text" name="textfield22" class="formText5"/>
+    </td>
+    <td>日</td>
+    <td>
+      <input type="text" name="textfield23" class="formText5"/>
+    </td>
+    <td width="3%">时</td>
+    <td width="7%">
+      <input type="text" name="textfield24" class="formText5"/>
+    </td>
+    <td width="4%">分</td>
+  </tr>
+  <tr>
+    <td colspan="15">
+      <input name="" type="image" src="images/sure.gif" class="sure"/>
+    </td>
+  </tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="foot">
+  <tr>
+    <td></td>
+  </tr>
+</table>
+</body>
+</html>

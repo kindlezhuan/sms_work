@@ -1,0 +1,5 @@
+package com.hk.sms.utils;
+
+public class TypeAndStatusConstant {
+	
+}

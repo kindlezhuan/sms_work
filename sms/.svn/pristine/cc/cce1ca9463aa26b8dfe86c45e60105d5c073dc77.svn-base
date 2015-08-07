@@ -1,0 +1,385 @@
+function CallWebService(method, params, onSuccess, onFailure) {
+	        Ext.Ajax.request({
+	            type: "POST",   // 发送数据
+	            url: method,    // WebService 地址和方法
+	            params: params,
+	            success: onSuccess, // 执行成功
+	            failure: onFailure  //执行失败
+	        });
+};
+var addWindow2;
+var myStore;
+var winHeight;
+var wtgWin;
+var yjyaId;
+var win;
+var param1;
+var true_false;//判断应急预案是否已经存在
+
+Ext.onReady(function () {
+    Ext.QuickTips.init();
+    
+    var mainVs = Ext.getBody().getViewSize();
+    winHeight = mainVs.height + 100;
+    
+    //定义查询条件
+//	var beginNf = gbicc.component.form.createDateField5(100,10,'beginNf','申报年份');
+//	var endNf = gbicc.component.form.createDateField5(100,null,'endNf','至');
+    var beginNf = gbicc.component.form.createComboBox(190,85,'beginNf','起始时间',[['1','2014'],['2','2015'],['3','2016'],['4','2017'],['5','2018'],['6','2019'],['7','2020']],null,null);
+    var endNf = gbicc.component.form.createComboBox(190,85,'endNf','截止时间',[['1','2014'],['2','2015'],['3','2016'],['4','2017'],['5','2018'],['6','2019'],['7','2020']],null,null);
+		    
+   	//定义列  
+	var columns = [
+  		{header: '发送时间', dataIndex: 'sbnf'},   
+  		{header: '发送人', dataIndex: 'shjg'},
+	 	{header: '发送目的号码', dataIndex: 'lxr'},
+	 	{header: '发送结果', dataIndex: 'lxdh'},
+	];
+	
+	//定义数据源
+	Ext.define('planList', {
+		extend: 'Ext.data.Model',
+		fields: [
+	       	{name: 'yjya_id' }, //mapping:0 这样的可以指定列显示的位置，0代表第1列，可以随意设置列显示的位置  
+	       	{name: 'sbnf' },
+	       	{name: 'shjg' },
+	       	{name: 'shyj' },
+	       	{name: 'lxr' },
+	       	{name: 'lxdh' }
+	    ]
+	});
+
+	//初始化时自动填充数据
+	myStore = Ext.create('Ext.data.Store', {
+		model: 'planList',
+		pageSize : 10,
+		proxy: {
+        	type: 'ajax',
+         	url: 'cfqy/cfqy_queryYjyasbs.do',
+         	actionMethods: {  
+            	read: 'POST'  
+         	},
+	        reader: {
+				type: 'json',
+	            root: 'data'
+	        }
+		},
+		autoLoad: false				
+	});
+	
+    //点击下一页时传递搜索框值到后台  
+ 	myStore.on('beforeload', function (myStore, options) { 
+         Ext.apply(myStore.proxy.extraParams, param1);    
+     }); 
+ 	
+	//新增
+	var addMonthWindow = function(){
+		var addMonthForm = new Ext.FormPanel({
+	        labelAlign: 'right',
+	        labelWidth: 115,
+	        width: 388,
+	        height:130,        
+	        closeAction : 'close',
+	        border: false,
+	        waitMsgTarget: true,
+	        autoScroll:true,
+	        buttonAlign: 'center',
+	        items: [{
+            	xtype: "label",
+            	border:0,
+            	width:100,
+            	style: "padding-top:5px;",
+            	html:"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+            }]	        
+	    });
+	    
+		win = new Ext.Window({
+		    id : 'win1',
+  			border : false,
+  			closable : true,
+  			layout : 'fit',
+  			closeAction : 'close',
+  			width : 400,
+  			height:200,
+  			autoScroll : true,
+  			resizable : false,
+  			modal : true,
+  			items : [addMonthForm],
+  			buttonAlign : 'center',
+	        buttons: [ 
+	            gbicc.component.form.createButton('确认', 'sava1', function(){
+	            	if (addMonthForm.form.isValid()){
+	            		//先判断选中年份的应急预案是否存在
+	            		var sbnf_new = nf.getRawValue();
+	            		CallWebService("cfqy/cfqy_SBNFextis.do?sbnf_new="+sbnf_new, null, function (request, opt) {
+	                    	var result = request.responseText;
+	                    	var requestText = eval("("+result+")");
+	                    	if(requestText.msg == null){
+	            	        	var data = requestText.data;
+	            	        	if(data != null && data !=0 ){
+	            	        		true_false=false;
+	            	        	}
+	            	        	else
+	            	        		true_false=true;
+	            	        }
+	            	        else{
+	            	        	true_false=false;
+	            	        }      	
+	                    	if(true_false){
+	                    		parent.ShowWindow('新增应急预案申报', 1050, winHeight, 'cfqy/cfqy_yjyasbAdd.do?sbnf='+sbnf_new+'&flag=1');
+	                    		win.hide();
+	                    	}else{
+	                    		alert(sbnf_new+"年度应急预案已存在！");
+	                    	}
+	                    });
+	            		
+	            	}
+	            })
+	        ]
+		});
+		return win;			
+	};
+	//判断选中年份的应急预案是否存在
+
+	var sbnf_extis = function(sbnf_new){
+
+		CallWebService("cfqy/cfqy_SBNFextis.do?sbnf_new="+sbnf_new, null, function (request, opt) {
+        	var result = request.responseText;
+        	alert("1:"+result);
+        	var requestText = eval("("+result+")");
+        	alert("2:"+requestText);
+        	if(requestText.msg == null){
+	        	var data = requestText.data;
+	        	if(data != null && data !=0 ){
+//	        		alert("3:~~~~~~~~~~");
+	        		true_false=false;
+	        	}
+	        	else
+	        		true_false=true;
+	        }
+	        else{
+	        	true_false=false;
+	        }      	
+        });
+		return true_false;
+	};
+	//审核-未通过
+	var wtgWindow = function(){
+		var wtgForm = new Ext.FormPanel({
+	        labelAlign: 'right',
+	        labelWidth: 115,
+	        width: 388,
+	        height:210,        
+	        closeAction : 'close',
+	        border: false,
+	        waitMsgTarget: true,
+	        autoScroll:true,
+	        buttonAlign: 'center',
+	        items: [{
+               	xtype: "label",
+               	border:0,
+               	style: "padding-top:5px;",
+               	html:"<br/>"
+               },gbicc.component.form.createTextArea2('shyj',300,30,'shyj','审核意见',null,false)]	        
+	    });
+	    
+	    var win = new Ext.Window({
+		    id : 'win2',
+  			border : false,
+  			closable : true,
+  			layout : 'fit',
+  			closeAction : 'close',
+  			height: 245,
+		    width: 400,
+  			autoScroll : true,
+  			resizable : false,
+  			modal : true,
+  			items : [wtgForm],
+  			buttonAlign : 'center',
+	        buttons: [ 
+	            gbicc.component.form.createButton('返回', 'colse', function(){
+	            	win.hide();
+	            }),
+	            gbicc.component.form.createButton('重新申请', 'cxsq', function(){
+	            	//addFormWindow();
+	            	
+	            	parent.ShowWindow('更新应急预案申报', 1050, winHeight, 'cfqy/cfqy_yjyasbAdd.do?yjya_id='+yjyaId+'&sbnf=1234'+'&flag=2');
+	            	win.hide();
+	            })
+	        ]
+		});
+		return win;			
+	}	
+	
+	var addMonthWin = addMonthWindow();
+	wtgWin = wtgWindow();	
+			 
+	//用户根据条件检索时更改数据
+	var forms = new Ext.FormPanel({
+        region: 'north',
+        id: 'fieldSetForm',
+        bodyBorder: false,
+        bodyPadding: '0 5 0 5',
+        autoHeight: true,
+        border: 0,
+        actionMethods: {  
+            read: 'POST'  
+        },
+        fieldDefaults: {
+            labelAlign: 'right',
+            msgTarget: 'side'
+        },
+        items: [{
+			displayField: 'panel',
+            border: 0,
+            bodyPadding:5,
+            hight: 150,
+            items: [
+            {//第一行，共3列
+                layout: 'column', //布局模式
+                bodyPadding: 5, //这里调整行间距
+                border: 0,
+                defaultType: 'combo', //这里定义控件类型，默认为textfield
+                items: [beginNf, endNf,{
+                	xtype: "label",
+                	border:0,
+                	width:30,
+                	html:"&nbsp;"
+                },{
+                	xtype: "form",
+                	border: 0,
+                	items:[{
+                		columnWidth: .20,
+	                    text: "搜&nbsp;&nbsp;索",
+	                    xtype: "button",	                    
+	                    listeners:{
+	                    	click:function(){
+//		                    	var beginNf = beginNf.getRawValue();
+//		                    	var endNf = endNf.getRawValue();
+		                    	//alert("beginNf===="+beginNf.getRawValue()+" ,endNf==="+endNf.getRawValue());
+		                    	if(beginNf.getRawValue() > endNf.getRawValue()){
+		                    		parent.Ext.Msg.alert('提示',"开始时间不能超过结束时间!");
+		                    		return;
+		                    	}
+		                    	var param = {
+		                    			"beginNf":beginNf.getRawValue(),
+		                    			'endNf':endNf.getRawValue(),
+		                    			start : 0,
+		    							limit : 10
+		                    	};
+		                    	param1 = {"beginNf":beginNf.getRawValue(),'endNf':endNf.getRawValue()};
+								myStore.load({
+								 	params:param
+								});
+	                        }
+	                    }
+
+                	}]                    
+                }]
+            }]
+        }]
+    });
+
+       	
+    //var sm = new Ext.selection.CheckboxModel({ checkOnly: false });
+    //创建表格  
+    var grid = new Ext.grid.GridPanel({
+        region: 'center',
+        store: myStore,
+        collapsible: false,
+        split: true,
+        border: true,
+        columns: columns,
+        stripeRows: true,
+        loadMask: true,
+        forceFit: true,
+        bbar: new Ext.PagingToolbar({
+            pageSize: 1,
+            id: 'bbar',
+            store: myStore,
+            firstText: '第一页',
+            prevText: '前一页',
+            nextText: '后一页',
+            lastText: '最后一页',
+            refreshText: '刷新',
+            autoWidth: true,
+            displayInfo: true,
+            displayMsg: '当前显示{0}-{1}条数据,共{2}条数据',
+            emptyMsg: "没有记录"
+        }),
+    });
+
+    //创建一个Ext.menu.Menu
+    var contextmenu = new Ext.menu.Menu({
+        id: 'theContextMenu',
+        items: [{
+            text: '查看详情',
+            handler: function (e) {
+            	parent.Ext.Msg.alert("系统提示", e.row);
+            }
+        }]
+    });
+
+    //监听表格的Ext.menu.Menu事件
+    grid.on("itemcontextmenu", function (view, record, item, index, e) {
+        e.preventDefault();
+        contextmenu.showAt(e.getXY());
+    });
+	
+    var viewport = new Ext.Viewport({
+        layout: 'border',
+        border: 0,
+        width:860,
+        hight:600,
+        items: [forms, grid]
+    });
+});
+
+function showWin(sbnf, yjya_id){
+	yjyaId = yjya_id;
+		CallWebService("cfqy/cfqy_getSHYJ.do?yjya_id="+yjya_id, null, function (request, opt) {
+        	var result = request.responseText;
+        	var requestText = eval("("+result+")");
+        	if(requestText.msg == null){
+	        	var data = requestText.data;
+	        	if(data != null)
+	        		Ext.getCmp('shyj').setValue(data.bz);
+	        }
+	        else{
+	        	parent.Ext.Msg.alert('提示',requestText.msg);
+	        	if(requestText.msg_no == '-5')
+        	 		window.parent.parent.location.href = "tologin.do";
+	        }      	
+        });
+		
+		wtgWin.show();
+}
+
+
+function deleteData(yjya_id){
+	parent.Ext.MessageBox.confirm(
+		'删除',
+		'确定删除此条数据吗？',
+		function (btn) {
+            if ("yes" == btn) {
+            	CallWebService("cfqy/cfqy_deleteYjyasb.do?yjya_id="+yjya_id, null, function (request, opt) {
+    	        	var result = request.responseText;
+    	        	var requestText = eval("("+result+")");
+    	        	if(requestText.msg == null){
+    		        	var data = requestText.data;
+    		        	if(data != null)
+    		        		parent.Ext.Msg.alert('提示',data);
+    		        	myStore.reload();
+    		        }
+    		        else{
+    		        	parent.Ext.Msg.alert('提示',requestText.msg);
+    		        	if(requestText.msg_no == '-5')
+    	        	 		window.parent.parent.location.href = "tologin.do";
+    		        }      	
+    	        });
+            } else {
+            	return;
+            }
+		}
+    );	
+}

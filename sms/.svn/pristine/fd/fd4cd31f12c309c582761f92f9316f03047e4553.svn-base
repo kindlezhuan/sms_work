@@ -1,0 +1,8 @@
+package com.hk.sms.utils;
+
+import java.util.HashMap;
+
+public class UserInfo {
+	@SuppressWarnings("rawtypes")
+	public static HashMap USERINFO =null;
+}

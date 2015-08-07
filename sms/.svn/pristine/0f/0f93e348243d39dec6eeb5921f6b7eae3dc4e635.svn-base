@@ -1,0 +1,238 @@
+/**********************************************************************\
+//popCalendar:	base on the popControl(must include popControl.js first)
+//author:	lucas zheng 2004-6-9
+//using:	popCalendar.show(popCtrl,textCtrl)
+//		popCtrl=the object to snap with;textCtrl=the object to set the return text
+\**********************************************************************/
+var gcGray = "#999999";
+var gcToggle = "#FFFF00";
+var gcBG = "#efefef";
+var gcStyle="";
+
+function fSetReturnDate(tYear,tMonth,tDay){
+  tYear=(tYear==null)?"2004":tYear;
+  tMonth=(tMonth==null)?"1":tMonth;
+  tDay=(tDay==null)?"1":tDay;
+  if(tMonth<10)tMonth="0"+tMonth;
+  if(tDay<10)tDay="0"+tDay;
+  var resultTxt = "";
+  if(gcStyle=="DateOnly")
+    resultTxt = tYear+"-"+tMonth+"-"+tDay;
+  else if(gcStyle=="TimeOnly")
+    resultTxt+=((tbSelHour.value < 10 ? "0" + tbSelHour.value : tbSelHour.value) + ":" + (tbSelMinute.value < 10 ? "0" + tbSelMinute.value : tbSelMinute.value) + ":" + (tbSelSecond.value < 10 ? "0" + tbSelSecond.value : tbSelSecond.value));
+  else if(gcStyle=="MonthOnly")
+    resultTxt = tYear+"-"+tMonth;
+  else
+  {
+    resultTxt = tYear+"-"+tMonth+"-"+tDay;
+    resultTxt+=(" " + (tbSelHour.value < 10 ? "0" + tbSelHour.value : tbSelHour.value) + ":" + (tbSelMinute.value < 10 ? "0" + tbSelMinute.value : tbSelMinute.value) + ":" + (tbSelSecond.value < 10 ? "0" + tbSelSecond.value : tbSelSecond.value));
+  }
+  popCalendar.setReturn(resultTxt);
+}
+
+function fSetSelected(aCell){
+  var iOffset = 0;
+  var iYear = parseInt(tbSelYear.value);
+  var iMonth = parseInt(tbSelMonth.value);
+  aCell.bgColor = gcBG;
+  with (aCell.children["cellText"]){
+  	var iDay = parseInt(innerText);
+  	if (color==gcGray)
+		iOffset = (Vector<10)?-1:1;
+	iMonth += iOffset;
+	if (iMonth<1) {
+		iYear--;
+		iMonth = 12;
+	}else if (iMonth>12){
+		iYear++;
+		iMonth = 1;
+	}
+  }
+  fSetReturnDate(iYear,iMonth,iDay);
+}
+
+function fBuildCal(iYear, iMonth) {
+  var aMonth=new Array();
+  for(i=1;i<7;i++)
+  	aMonth[i]=new Array(i);
+
+  var dCalDate=new Date(iYear, iMonth-1, 1);
+  var iDayOfFirst=dCalDate.getDay();
+  var iDaysInMonth=new Date(iYear, iMonth, 0).getDate();
+  var iOffsetLast=new Date(iYear, iMonth-1, 0).getDate()-iDayOfFirst+1;
+  var iDate = 1;
+  var iNext = 1;
+
+  for (d = 0; d < 7; d++)
+	aMonth[1][d] = (d<iDayOfFirst)?-(iOffsetLast+d):iDate++;
+  for (w = 2; w < 7; w++)
+  	for (d = 0; d < 7; d++)
+		aMonth[w][d] = (iDate<=iDaysInMonth)?iDate++:-(iNext++);
+  return aMonth;
+}
+
+function fUpdateCal(iYear, iMonth) {
+  myMonth = fBuildCal(iYear, iMonth);
+  var i = 0;
+  for (w = 0; w < 6; w++)
+	for (d = 0; d < 7; d++)
+		with (cellText[(7*w)+d]) {
+			Vector = i++;
+			if (myMonth[w+1][d]<0) {
+				color = gcGray;
+				innerText = -myMonth[w+1][d];
+			}else{
+				color = ((d==0)||(d==6))?"red":"black";
+				innerText = myMonth[w+1][d];
+			}
+		}
+}
+
+function fInitCalendar()
+{
+  var curDate = new Date();
+  tbCurDateFieldCell.innerHTML=fDrawCurDate();
+  tbTimeFieldCell.innerHTML=fDrawTime(gcStyle);
+  fSetDate(curDate.getFullYear(),curDate.getMonth()+1,curDate.getDate());
+  fSetTime(curDate.getHours(),curDate.getMinutes(),curDate.getSeconds());
+}
+
+function fSetDate(iYear,iMon,iDay){
+  tbSelMonth.options[iMon-1].selected = true;
+  for (i = 0; i < tbSelYear.length; i++)
+	if (tbSelYear.options[i].value == iYear)
+		tbSelYear.options[i].selected = true;
+  fUpdateCal(iYear, iMon);
+}
+
+function fSetTime(iHour,iMinute,iSecond)
+{
+  tbSelHour.value=iHour;
+  tbSelMinute.value=iMinute;
+  tbSelSecond.value=iSecond;
+}
+
+function fSetStyle(style)
+{
+  gcStyle=style;
+  if(style=="DateOnly" || style=="MonthOnly")
+  {
+  	tbYearMonthField.style.display="block";
+        tbTimeField.style.display="none";
+        tbDayField.style.display="block";
+        tbCurDateField.style.display="block";
+  }
+  else if(style=="TimeOnly")
+  {
+  	tbYearMonthField.style.display="none";
+        tbTimeField.style.display="block";
+        tbDayField.style.display="none";
+        tbCurDateField.style.display="none";
+  }
+  else
+  {
+  	tbYearMonthField.style.display="block";
+        tbTimeField.style.display="block";
+        tbDayField.style.display="block";
+        tbCurDateField.style.display="block";
+  }
+}
+
+function fPrevMonth(){
+  var iMon = tbSelMonth.value;
+  var iYear = tbSelYear.value;
+
+  if (--iMon<1) {
+	  iMon = 12;
+	  iYear--;
+  }
+  fSetDate(iYear, iMon);
+}
+
+function fNextMonth(){
+  var iMon = tbSelMonth.value;
+  var iYear = tbSelYear.value;
+  if (++iMon>12) {
+	  iMon = 1;
+	  iYear++;
+  }
+  fSetDate(iYear, iMon);
+}
+
+function fDrawTime(ifReturn)
+{
+  timeStr="时间：<SELECT name='tbSelHour' style='border: 1px solid #0099CC;background-color: #EDF3FE;' mark='popControl'>";
+  for(i=0;i<24;i++)
+	timeStr+="<OPTION value='"+i+"'>"+i+"</OPTION>";
+  timeStr+="</SELECT>：<select name='tbSelMinute' style='border: 1px solid #0099CC;background-color: #EDF3FE;' mark='popControl'>";
+  for (i=0; i<60; i++)
+	timeStr+="<option value='"+i+"'>"+i+"</option>";
+  timeStr+="</SELECT>：<select name='tbSelSecond' style='border: 1px solid #0099CC;background-color: #EDF3FE;' mark='popControl'>";
+  for (i=0; i<60; i++)
+	timeStr+="<option value='"+i+"'>"+i+"</option>";
+  timeStr+="</select>"
+  if(ifReturn!=null && ifReturn=="TimeOnly")
+  	timeStr+="&nbsp;<input type=\"button\" style=\"cursor:hand\" value=\"确定\" onClick=\"fSetReturnDate()\">";
+  return timeStr;
+}
+
+function fDrawCurDate()
+{
+  var curDate=new Date();
+  var giYear=curDate.getFullYear();
+  var giMonth=curDate.getMonth()+1;
+  var giDay=curDate.getDate();
+  return "<B style='cursor:hand; font: bold 13 宋体' onclick=\"fSetReturnDate('"+giYear+"','"+giMonth+"','"+giDay+"')\" onMouseOver='this.style.color=gcToggle' onMouseOut='this.style.color=0'>今天："+giYear+"年"+giMonth+"月"+giDay+"日</B>";
+
+}
+
+function fDrawCal(iCellHeight, iDateTextSize) {
+  var WeekDay = new Array("日","一","二","三","四","五","六");
+  var styleTD = " bgcolor='"+gcBG+"' bordercolor='"+gcBG+"' valign='middle' align='center' height='"+iCellHeight+"' style='font:bold "+iDateTextSize+" 宋体;";
+  var resultStr
+	resultStr="<tr>";
+	for(i=0; i<7; i++)
+		resultStr+="<td "+styleTD+"color:#990099' >" + WeekDay[i] + "</td>";
+	resultStr+="</tr>";
+
+	for (w = 1; w < 7; w++) {
+		resultStr+="<tr>";
+		for (d = 0; d < 7; d++) {
+			resultStr+="<td id=calCell "+styleTD+"cursor:hand;' onMouseOver='this.bgColor=gcToggle' onMouseOut='this.bgColor=gcBG' onclick='fSetSelected(this)'>";
+			resultStr+="<font id=cellText Vector='Lucas zheng'> </font>";
+			resultStr+="</td>";
+		}
+		resultStr+="</tr>";
+	}
+  return resultStr;
+}
+
+var gMonths = new Array("&nbsp;一月","&nbsp;二月","&nbsp;三月","&nbsp;四月","&nbsp;五月","&nbsp;六月","&nbsp;七月","&nbsp;八月","&nbsp;九月","&nbsp;十月","十一月","十二月");
+var calendarStr="<table border='0' bgcolor='#8EA7D8'>";
+calendarStr+="<TR id='tbCurDateField'><TD align='center' id='tbCurDateFieldCell'>";
+calendarStr+=fDrawCurDate();
+calendarStr+="</TD></TR>";
+
+calendarStr+="<tr id='tbDayField'><td align='center'>";
+calendarStr+="<DIV style='background-color:#E0E0E0'><table width='100%' border='0' cellpadding='2'>";
+calendarStr+=fDrawCal(11, 11);
+calendarStr+="</table></DIV></td></TR>";
+calendarStr+="<TR id='tbYearMonthField'>";
+calendarStr+="<td valign='middle' align='center' nowrap><input type='button' style='border: 1px solid #0099CC;background-color: #EDF3FE;' name='PrevMonth' value='<' style='height:20;width:20;FONT:bold' onClick='fPrevMonth()'>";
+calendarStr+="&nbsp;<SELECT name='tbSelYear' style='border: 1px solid #0099CC;background-color: #EDF3FE;' onChange='fUpdateCal(tbSelYear.value, tbSelMonth.value)' mark='popControl'>";
+for(i=1990;i<2050;i++)
+	calendarStr+="<OPTION value='"+i+"'>"+i+"年</OPTION>";
+calendarStr+="</SELECT>";
+calendarStr+="&nbsp;<select name='tbSelMonth' style='border: 1px solid #0099CC;background-color: #EDF3FE;' onChange='fUpdateCal(tbSelYear.value, tbSelMonth.value)' mark='popControl'>";
+for (i=0; i<12; i++){
+	calendarStr+="<option value='"+(i+1)+"'>"+gMonths[i]+"</option>";
+}
+calendarStr+="</SELECT>";
+calendarStr+="&nbsp;<input type='button' style='border: 1px solid #0099CC;background-color: #EDF3FE;' name='PrevMonth' value='>' style='height:20;width:20;FONT:bold' onclick='fNextMonth()'> </td></TR>";
+calendarStr+="<TR id=\"tbTimeField\"><td align='center' id=\"tbTimeFieldCell\" nowrap>";
+calendarStr+=fDrawTime()
+calendarStr+="</td></tr>";
+calendarStr+="</TABLE>";
+
+var popCalendar=new popControl(calendarStr);
+popCalendar.beforeShow="fSetStyle(this.parameter);fInitCalendar();"

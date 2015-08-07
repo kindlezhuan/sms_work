@@ -1,0 +1,9 @@
+﻿[{
+        text: '企业信息',
+	    leaf: 'true',
+	    qtitle: "cfqy/cfqy_qyxx.do"
+    },{
+        text: '用户管理',
+	    leaf: 'true',
+	    qtitle: "cfqy/cfqy_yhgl.do"
+    }]

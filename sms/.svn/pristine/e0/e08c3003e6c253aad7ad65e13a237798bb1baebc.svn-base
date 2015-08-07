@@ -1,0 +1,288 @@
+
+//****************************************************************************
+// PopControl: 		the base of pop up control(eg:a calendar on it)
+// Author: 		Lucas zheng
+// Date:		2004-6-9
+// Param: 		dataStr=the html code of what you want to show
+// Using:		first. new a popControl object,use obj.show(popCtrl,textCtrl) to show the control
+//			popCtrl=the object to snap with;textCtrl=the object to set the return text
+//			second. use obj.() to hide the control
+//			third. you can add event at beforeShow/afterShow/beforeHide/afterHide like this:obj.beforeShow="alert('before show')";
+//			fourth.use obj.setReturn(text,val) to get you return and hide control
+// i.e.: 		var popCtrl=new popControl("<table border=1><tr><td onClick='hideControls();'>asdf,fdsa</td></tr></table>");
+//****************************************************************************
+var popControls=[];
+function popControl(dataStr,align){
+	this.n_id=popControls.length;
+	popControls[this.n_id]=this;
+        this.parameter="";
+        this.rootDir="";
+        this.align=align;
+	this.popCtrl=null;			//the object which popControl to popup		(mandatory)
+	this.textCtrl=null;			//the object which the return text to set	(optional)
+	this.valueCtrl=null;			//the object which the return value to set	(optional)
+	this.goSelectTag = new Array();
+        this.visible=false;
+        this.notAssignAmount=null;
+	document.write("<div id='iPopControl_"+ this.n_id +"' onclick='event.cancelBubble=true' onKeydown='popControlKeyDown(event,"+this.n_id+")' style='POSITION:absolute;top:-1000;left:-1000;visibility:hidden;border:1px outset;width:auto;height:auto;z-index:1000;'> ");
+	if(dataStr==null || dataStr=="")
+        	document.write("&nbsp;</div>");
+        else if(dataStr instanceof Array)
+		document.write(dataStr.join("\r\n")+"</div>");
+	else
+		document.write(dataStr+"</div>");
+	this.vicPopCtrl=eval("document.all.iPopControl_"+this.n_id);
+	this.Point=function(iX, iY){
+		this.x = iX;
+		this.y = iY;
+	}
+        this.getParameter=function(sParam,sSeperator,sEqual){
+  		if(this.parameter==null || this.parameter=="") return "";
+  		if(sParam==null || sParam=="") return this.parameter;
+  		if(sSeperator==null) sSeperator=";";
+  		if(sEqual==null) sEqual="=";
+  		var tStr=this.parameter.split(sSeperator);
+  		var tmpStr;
+  		for(var i=0;i<tStr.length;i++)
+  		{
+    			tmpStr=tStr[i].split(sEqual);
+    			if(tmpStr.length>1)
+       			if(tmpStr[0]==sParam)
+        			 return tmpStr[1];
+  		}
+  		return "";
+        }
+	this.fGetXY=function(aTag){
+  		var oTmp = aTag;
+  		var pt = new this.Point(0,0);
+  		do {
+  			pt.x += oTmp.offsetLeft;
+  			pt.y += oTmp.offsetTop;
+  			oTmp = oTmp.offsetParent;
+  		} while(oTmp.tagName!="BODY");
+  		return pt;
+	}
+	this.fToggleTags=function(){
+  		with (document.all.tags("SELECT")){
+ 			for (i=0; i<length; i++)
+ 			if ((item(i).mark!="popControl")&& this.fTagInBound(item(i))){
+ 				item(i).style.visibility = "hidden";
+ 				this.goSelectTag[this.goSelectTag.length] = item(i);
+ 			}
+  		}
+	}
+	this.fTagInBound=function(aTag){
+  		with (this.vicPopCtrl.style){
+  			var l = parseInt(left);
+  			var t = parseInt(top);
+  			var r = l+parseInt(this.vicPopCtrl.offsetWidth);
+  			var b = t+parseInt(this.vicPopCtrl.offsetHeight);
+			var ptLT = this.fGetXY(aTag);
+			return !((ptLT.x>r)||(ptLT.x+aTag.offsetWidth<l)||(ptLT.y>b)||(ptLT.y+aTag.offsetHeight<t));
+  		}
+	}
+	this.beforeShow=null;
+	this.afterShow=null;
+	this.beforeHide=null;
+	this.afterHide=null;
+        this.beforeReturn=null;
+        this.afterReturn=null;
+	//you must atleast supply popCtrl(here or obj.popCtrl=XX)
+	//you can define event beforeShow/afterShow by you own;
+	this.show=function(pCtrl,tCtrl,vCtrl){
+          	this.popCtrl=null;
+                this.textCtrl=null;
+                this.valueCtrl=null;
+		//the popup object
+		if(pCtrl!=null){
+			if(typeof(pCtrl)=="string")
+				this.popCtrl=eval((pCtrl.indexOf("document.all.")>=0?"":"document.all.")+pCtrl);
+			else if(typeof(pCtrl)=="object")
+				this.popCtrl=pCtrl;
+		}
+		//the return text object
+		if(tCtrl!=null){
+			if(typeof(tCtrl)=="string")
+				this.textCtrl=(tCtrl.indexOf("document.all.")>=0?"":"document.all.")+tCtrl;
+			else if(typeof(tCtrl)=="object")
+				this.textCtrl=tCtrl;
+		}
+		//the return value object(can be null)
+		if(vCtrl!=null){
+			if(typeof(vCtrl)=="string")
+				this.valueCtrl=(vCtrl.indexOf("document.all.")>=0?"":"document.all.")+vCtrl;
+			else if(typeof(vCtrl)=="object")
+				this.valueCtrl=vCtrl;
+		}
+		if(this.popCtrl==null){
+			alert("设置错误，请重新设置");
+			return false;
+		}
+		if(this.beforeShow!=null)
+                {
+                  try{eval(this.beforeShow);}catch(e){}
+                }
+		event.cancelBubble=true;
+		//hide other popControl
+		for(var i=0;i<popControls.length;i++)
+                  if(popControls[i].visible==true) popControls[i].hide();
+
+		var point= this.fGetXY(this.popCtrl);
+		with (this.vicPopCtrl.style) {
+                  	if(this.align!=null && this.align.toLowerCase()=="right")
+                          left=point.x-(this.vicPopCtrl.offsetWidth-this.popCtrl.offsetWidth);
+                        else
+                          left = point.x;
+                        top  = point.y+this.popCtrl.offsetHeight;
+                        //alert("width="+this.vicPopCtrl.offsetWidth + ",height="+this.vicPopCtrl.offsetHeight);
+			//width = this.vicPopCtrl.offsetWidth;
+			//height = this.vicPopCtrl.offsetHeight;
+			this.fToggleTags(point);
+			visibility = 'visible';
+  		}
+               this.visible=true;
+  		//this.vicPopCtrl.focus();
+  		if(this.afterShow!=null)
+                {
+                  try{eval(this.afterShow);}catch(e){}
+                }
+	}
+      //keith add
+      this.show4=function(pCtrl,tCtrl,vCtrl,notAA){
+          this.notAssignAmount=null;
+		if(notAA!=null){
+			if(typeof(notAA)=="string")
+				this.notAssignAmount=(notAA.indexOf("document.all.")>=0?"":"document.all.")+notAA;
+			else if(typeof(notAA)=="object")
+				this.notAssignAmount=notAA;
+		}
+        this.show(pCtrl,tCtrl,vCtrl);
+       }
+
+	//hide the control
+	//you can define event beforeHide/afterHide by you own;
+	this.hide=function(){
+		if(this.beforeHide!=null)
+		{
+                 try{eval(this.beforeHide);}catch(e){}
+		}
+		this.vicPopCtrl.style.visibility = "hidden";
+                this.vicPopCtrl.style.left="-1000";
+                this.vicPopCtrl.style.top="-1000";
+  		for (i in this.goSelectTag)
+  			this.goSelectTag[i].style.visibility = "visible";
+  		this.goSelectTag.length = 0;
+                this.visible=false;
+  		if(this.afterHide!=null)
+                {
+                  try{eval(this.afterHide);}catch(e){}
+                }
+	}
+	//set the return text to textCtrl
+	this.setText=function(tmpTxt){
+		if(this.textCtrl!=null&&tmpTxt!=null)
+		{
+			if(typeof(this.textCtrl)=="object")
+				this.textCtrl.value=tmpTxt;
+			else
+				eval(this.textCtrl+"='"+tmpTxt+"'");
+		}
+	}
+	//set the return value to valueCtrl
+	this.setValue=function(tmpVal){
+		if(this.valueCtrl!=null&&tmpVal!=null)
+		{
+			if(typeof(this.valueCtrl)=="object")
+				this.valueCtrl.value=tmpVal;
+			else
+				eval(this.valueCtrl+"='"+tmpVal+"'");
+		}
+	}
+	//set text and value,and hide the control
+	this.setReturn=function(tmpTxt,tmpVal){
+          	if(this.beforeReturn!=null)
+                  try{eval(this.beforeReturn);}catch(e){}
+		this.setText(tmpTxt);
+		this.setValue(tmpVal);
+                if(this.afterReturn!=null)
+              	  try{eval(this.afterReturn);}catch(e){}
+		this.hide();
+	}
+         //keith add
+        this.setReturn3=function(tmpTxt,tmpVal,tmpNotAssignAmount){
+		if(this.valueCtrl!=null&&tmpNotAssignAmount!=null)
+		{
+			if(typeof(this.notAssignAmount)=="object")
+				this.notAssignAmount.value=tmpNotAssignAmount;
+			else
+				eval(this.notAssignAmount+"='"+tmpNotAssignAmount+"'");
+		}
+          this.setReturn(tmpTxt,tmpVal);
+          }
+          //....end
+        this.setPopContent=function(contentStr){
+        	if(contentStr==null)
+                	this.vicPopCtrl.innerHTML="&nbsp;";
+          	else if(contentStr instanceof Array)
+                	this.vicPopCtrl.innerHTML=(contentStr.join("\r\n"));
+                else
+                	this.vicPopCtrl.innerHTML=contentStr;
+        }
+}
+
+function popControlKeyDown(evnt,index){
+  try{
+    if(evnt.keyCode==27)
+    	popControls[index].hide();
+  }
+  catch(e){}
+}
+//hide all popControls
+document.write("<SCRIPT event=onclick() for=document language=JavaScript>");
+document.write("  for(var i=0;i<popControls.length;i++)");
+document.write("    if(popControls[i].visible==true) popControls[i].hide();");
+document.write("</SCRIPT>");
+
+//******************** Some utility here *********************\
+//get a iFrame with src/id/width/height
+//the tObj is the name of popControl,we can use in src page
+function getIFrame(tObj,tSrc,tName,tWidth,tHeight){
+  var result="<iframe frameborder=\"0\" scrolling=\"auto\" controlObj=\""+ tObj+"\" src=\"" + tSrc +"\"";
+  if(tName!=null)
+  	result+=" name=\""+ tName + "\"";
+  else
+  	result+=" name=\"_"+ tObj + "Frame\"";
+  if(tWidth!=null)
+  	result+=" width=\"" + tWidth + "\"";
+  else
+  	result+=" width=\"250\"";
+  if(tHeight!=null)
+  	result+=" height=\""+ tHeight + "\"";
+  else
+  	result+=" height=\"180\"";
+  result+="></iframe>";
+  return result;
+}
+
+//get a parameter from a string
+//eg: "type=object;id=12;text=ok",
+//     in this string ';' is seperator(default), '=' is equal(default)
+//     so invoke getParameter("type",";","=") will get string  "object".
+function getParameter(sText,sParam,sSeperator,sEqual)
+{
+  if(sText==null || sText=="") return "";
+  if(sParam==null || sParam=="") return "";
+  if(sSeperator==null) sSeperator=";";
+  if(sEqual==null) sEqual="=";
+  var tStr=sText.split(sSeperator);
+  var tmpStr;
+  for(var i=0;i<tStr.length;i++)
+  {
+    tmpStr=tStr[i].split(sEqual);
+    if(tmpStr.length>1)
+       if(tmpStr[0]==sParam)
+         return tmpStr[1];
+  }
+  return "";
+}
+//*********************************************************************

@@ -1,0 +1,129 @@
+<%@ page contentType="text/html; charset=GBK"%>
+<jsp:directive.page import="java.util.List"/>
+<%@ taglib uri="/WEB-INF/framework-ogm.tld" prefix="eaf" %>
+<%
+String path = request.getContextPath();
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>联系人信息</title>
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<link href="../../../style/css.css" rel="stylesheet" />
+<link href="../../../style/hotmail.css" rel="stylesheet" />
+<script type="text/javascript" src="<%=path %>/js/page_init.js"></script>
+<script type="text/javascript">
+function initPage(){
+	radioGuoupInit("userSex", "<bean:write name='userInfo' property='userSex'/>");
+	
+	var userGroupsStr = "<bean:write name='userGroupsStr'/>";
+	if(userGroupsStr != ""){
+		var userGroups = userGroupsStr.split(",");
+		var userGroupObjs = document.getElementsByName("userGroup");
+		for(var i=0,n=userGroups.length; i<n; i++){
+			for(var j=0; j<userGroupObjs.length; j++){
+				if(userGroupObjs[j].value == userGroups[i]){
+					userGroupObjs[j].checked = "checked";
+				}
+			}
+		}
+	}
+}
+
+function save()
+{
+	if(frm_userinfo.userName.value == "")
+	{
+		alert("请输入联系人姓名！");
+		return;
+	}
+	if(frm_userinfo.userTel.value == "")
+	{
+		alert("请输入联系人电话！");
+		return;
+	}
+	
+	var selectedNum = 0;
+	var userGroups = document.getElementsByName("userGroup");
+	if(userGroups != null){
+		for(var i=0, n=userGroups.length; i<n; i++){
+			if(userGroups[i].checked)
+				selectedNum ++;
+		}
+	}
+	if(selectedNum == 0)
+	{
+		alert("请选择联系人分组！");
+		return;
+	}
+	frm_userinfo.submit();
+}
+</script>
+</head>
+<body onload="initPage();">
+<eaf:label/>
+<form action="userAction.do?action=saveUser" method="post" name="frm_userinfo">
+<input type="hidden" name="userId" value="<bean:write name='userInfo' property='userId'/>">
+<input type="hidden" name="shareFlag" value="0">
+  <table class="settletable" align="center" width="95%">
+    <tr>
+      <td colspan="4" class="yi_hang_8">联系人信息</td>
+    </tr>
+    <tr>
+      <td width="15%" class="yi_hang_4"><b>姓名</b></td>
+      <td width="35%" class="yi_hang_9">
+        <input type="text"  name="userName" class="input_bottomline_nolength" value="<bean:write name='userInfo' property='userName'/>" size="40"/>
+        <span class="noempty"> *</span></td>
+      <td width="15%" class="yi_hang_4"><b>性别</b></td>
+      <td width="35%" class="yi_hang_9">
+        <input type="radio"  name="userSex" value="1" checked="checked"/>
+        男
+        <input type="radio"  name="userSex" value="0"/>
+        女</td>
+    </tr>
+    <tr>
+      <td class="yi_hang_4" ><b>手机</b></td>
+      <td class="yi_hang_9">
+        <input type="text"  name="userTel" class="input_bottomline_nolength" value="<bean:write name='userInfo' property='userTel'/>" size="40"/>
+        <span class="noempty"> *</span></td>
+      <td class="yi_hang_4"><b>EMAIL</b></td>
+      <td class="yi_hang_9">
+        <input type="text"  name="userEmail" class="input_bottomline_nolength" value="<bean:write name='userInfo' property='userEmail'/>" size="40"/>
+      </td>
+    </tr>
+    <tr>
+      <td class="yi_hang_4" ><b>地址</b></td>
+      <td class="yi_hang_9" colspan="3">
+        <input type="text" name="userAddress" class="input_bottomline_nolength" value="<bean:write name='userInfo' property='userAddress'/>" size="100"/>
+      </td>
+    </tr>
+    <tr>
+      <td class="yi_hang_4" ><b>备注</b></td>
+      <td class="yi_hang_9" colspan="3">
+        <textarea name="userRemark" rows="5" cols="100"><bean:write name='userInfo' property='userRemark'/></textarea>
+      </td>
+    </tr>
+    <tr>
+      <td class="yi_hang_4" ><b>所属分组</b></td>
+      <td class="yi_hang_9" colspan="3">
+        <label><b>私人分组</b></label><br/>
+        <table width="100%">
+          <tr>
+
+		  </tr>
+ 		</table>
+      </td>
+    </tr>
+    <tr>
+      <td class="yi_hang_9" ></td>
+      <td class="yi_hang_9" colspan="3">
+        <input type="button" value="保存" class="button" onclick="save();"/>
+        <input type="button" value="取消" class="button" onClick="window.location='queryForStaffUsers.do'"/>
+      </td>
+    </tr>
+  </table>
+</form>
+</body>
+</html>

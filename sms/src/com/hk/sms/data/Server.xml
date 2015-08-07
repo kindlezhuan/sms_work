@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ServerMapper">    
+    <!-- 插入Save记录 --> 
+    <insert id="insertSave" parameterType="com.hk.sms.model.SMSSave">    
+         INSERT INTO sms_info(TimeMsg_ID,UID,MOBILE,MSG,Send_result,Send_time) VALUES(
+         #{TimeMsg_ID},#{UID},#{MOBILE},#{MSG},#{Send_result},STR_TO_DATE(#{Send_time},'%Y-%m-%d %H:%i:%s'))
+    </insert>  
+     
+    <!-- 插入Log记录 -->  
+    <insert id="insertLog" parameterType="com.hk.sms.model.SMSLog">    
+          INSERT INTO sms_log(TimeMsg_ID,UID,MOBILE,MSG,Get_style,Send_style,Send_result,Send_result_code,Send_result_code_info,Get_time,Send_time,savetime,savetime_log) 
+		  VALUES(#{TimeMsg_ID},#{UID},#{MOBILE},#{MSG},#{Get_style},#{Send_style},#{Send_result},#{Send_result_code},#{Send_result_code_info},STR_TO_DATE(#{Get_time},'%Y-%m-%d %H:%i:%s'),STR_TO_DATE(#{Send_time},'%Y-%m-%d %H:%i:%s'),STR_TO_DATE(#{savetime},'%Y-%m-%d %H:%i:%s'),STR_TO_DATE(SYSDATE(),'%Y-%m-%d %H:%i:%s'))
+    </insert> 
+ 	
+ 	<!-- 查询Log记录 条数 -->  
+    <select id="queryLoginfoCount" resultType="java.lang.Integer"
+		parameterType="HashMap">
+		select count(1) as totalCount
+		from sms_log 
+		where 1=1
+		<if test="beginTime!=null">
+  			<![CDATA[and get_time >= #{beginTime} ]]>
+		</if>
+		<if test="endTime!=null">
+			<![CDATA[and get_time <= #{endTime} ]]>
+		</if>
+		<if test="reciveName!=null">
+			<![CDATA[and mobile like CONCAT('%', #{reciveName}, '%') ]]>
+		</if>
+		<if test="sendName!=null and sendName != ''">
+			<![CDATA[and uid = #{sendName} ]]>
+		</if>
+		order by l_id
+	</select>  
+	
+	<!-- 查询Log记录  -->  
+	<select id="queryLoginfo" resultType="HashMap"
+		parameterType="HashMap">
+	select l_id as id,timemsg_id as tmid,uid as sendName,mobile as recivename,send_result as sendresult,get_time as sendtime 
+		from sms_log 
+		where 1=1
+		<if test="beginTime!=null">
+  			<![CDATA[and get_time >= #{beginTime} ]]>
+		</if>
+		<if test="endTime!=null">
+			<![CDATA[and get_time <= #{endTime} ]]>
+		</if>
+		<if test="reciveName!=null and reciveName != ''">
+			<![CDATA[and mobile like CONCAT('%', #{reciveName}, '%') ]]>
+		</if>
+		<if test="sendName!=null and sendName != ''">
+			<![CDATA[and uid = #{sendName} ]]>
+		</if>
+		ORDER BY l_id
+		<if test="start!=null and end!=null">
+		<![CDATA[ limit #{start},#{end} ]]>
+		</if>
+	</select> 
+	
+		<!-- 查询一条Log记录  -->  
+	<select id="getLog" resultType="com.hk.sms.model.SMSLog"
+		parameterType="HashMap">
+		select * 
+		from sms_log 
+		where 1=1
+		and l_id = #{l_id}
+	</select> 
+</mapper>  

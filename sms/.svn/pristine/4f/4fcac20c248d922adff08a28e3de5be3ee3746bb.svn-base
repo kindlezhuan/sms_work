@@ -1,0 +1,81 @@
+<%@ page contentType="text/html; charset=GBK"%>
+<jsp:directive.page import="java.util.List"/>
+<%@ taglib uri="/WEB-INF/framework-ogm.tld" prefix="eaf" %>
+<%
+String path = request.getContextPath();
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>短信模板设置</title>
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<link href="../../../style/css.css" rel="stylesheet" />
+<link href="../../../style/hotmail.css" rel="stylesheet" />
+<script type="text/javascript" src="<%=path %>/js/page_init.js"></script>
+<script type="text/javascript" src="<%=path %>/js/validator.js"></script>
+<script type="text/javascript">
+function initPage(){
+
+}
+
+function save()
+{
+	if(Validator.Validate(frm_templateinfo, 1)){
+		if(!confirm("确定要保存修改吗？"))
+			return false;
+		
+		<%
+		String temp_id = request.getParameter("temp_id");
+		if(temp_id == null)
+			out.println("frm_templateinfo.action='SmsTemplate.do?action=add'");
+		%>
+		frm_templateinfo.submit();
+	}
+}
+</script>
+</head>
+<body onload="initPage();">
+<eaf:label/>
+<form action="SmsTemplate.do?action=save" method="post" name="frm_templateinfo">
+  <table class="settletable" align="center" width="95%">
+    <tr>
+      <td colspan="4" class="yi_hang_8">短信模板设置</td>
+    </tr>
+    <tr>
+      <td width="15%" class="yi_hang_4"><b>模板编号</b></td>
+      <td class="yi_hang_9" colspan="3">
+        <input type="text"  name="tempId" class="input_bottomline_nolength" value="<bean:write name='templateInfo' property='tempId'/>" size="50" dataType="Integer" msg="模板编号只能为数字!"/><font style="color:red">*</font>
+        <span class="noempty"> </span></td>
+      </td>
+    </tr>
+    <tr>
+      <td class="yi_hang_4" ><b>模板标题</b></td>
+      <td class="yi_hang_4" colspan="3">
+        <input type="text" name="title" class="input_bottomline_nolength" value="<bean:write name='templateInfo' property='title'/>" size="100" dataType="Require" msg="短信标题不能为空!"/><font style="color:red">*</font>
+      </td>
+    </tr>
+    <tr>
+      <td class="yi_hang_4" ><b>模板内容</b></td>
+      <td class="yi_hang_4" colspan="3">
+        <textarea name="content" rows="5" cols="100" dataType="Require" msg="短信模板内容不能为空！!"><bean:write name='templateInfo' property='content'/></textarea><font style="color:red">*</font>
+      </td>
+    </tr>
+    <tr>
+      <td class="yi_hang_4" ><b>创建人</b></td>
+      <td class="yi_hang_9" colspan="3">
+        <input type="text" name="staffId" readonly class="input_bottomline_nolength" value="<bean:write name='templateInfo' property='staffId'/>" size="50"/>
+      </td>
+    </tr>
+    <tr>
+      <td class="yi_hang_9" ></td>
+      <td class="yi_hang_9" colspan="3">
+        <input type="button" value="保存" class="button" onclick="save();"/>
+        <input type="button" value="取消" class="button" onClick="window.location='QuerySmsTemplate.do'"/>
+      </td>
+    </tr>
+  </table>
+</form>
+</body>
+</html>

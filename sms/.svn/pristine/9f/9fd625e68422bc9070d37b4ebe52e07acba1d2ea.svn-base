@@ -1,0 +1,86 @@
+<%@ page contentType="text/html; charset=GBK" pageEncoding="GBK"%>
+<jsp:directive.page import="java.util.List"/>
+<%@ taglib uri="/WEB-INF/framework-ogm.tld" prefix="eaf" %>
+<%
+String path = request.getContextPath();
+%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=GBK" />
+<title>公共分组权限管理</title>
+<link href="../../../style/css.css" rel="stylesheet" />
+<link href="../../../style/hotmail.css" rel="stylesheet" />
+<link href="../css/mini.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+//定义元员工数组
+var g_staffidArr = new Array();
+var g_staffnameArr = new Array();
+
+function chooseStaff() {
+	var v, i, vText="", vValue="";
+	v = window.showModalDialog('../../../depts/choice_staff.jsp',window,'dialogWidth:700px;dialogHeight:500px;help:no;status:no;scrollbars:yes;center:yes');
+	if(v != null){
+	     for(i=0; i<v.length; i++){
+	       vText = vText + v[i].text + ",";
+	       vValue = vValue + v[i].id + ",";
+	     }
+	     purviewForm.staffNames.value = vText;
+	     purviewForm.staffIds.value = vValue;
+	     // alert(vText);
+	     // alert(vValue);
+	}
+}
+
+function setPurview() {
+  var groupId = purviewForm.groupId.value;
+  if(groupId == ""){
+  	alert("请选择分组!");
+  	return;
+  }
+  
+  var staffNames = purviewForm.staffNames.value;
+  if(staffNames == ""){
+  	alert("请选择使用人员!");
+  	return;
+  }
+  
+  if(confirm("确定保存该数据？")) {
+    purviewForm.submit();
+  }
+}
+</script>
+</head>
+<body>
+<eaf:label/>
+<br/><br/><br/><br/><br/>
+<form name="purviewForm" action="groupAction.do?action=setPurview" method="post">
+<table class="settletable" width="70%" align="center">
+  <tr>
+    <td class="yi_hang_4"><b>公共分组<b></td>
+    <td class="yi_hang_9">
+      <select name="groupId">
+
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td class="yi_hang_4"><b>使用人员<b></td>
+    <td class="yi_hang_9">
+      <textarea name="staffNames" cols="50" rows="5" readonly></textarea>&nbsp;<a href="javascript:chooseStaff();">选择</a>
+      <input type="hidden" name="staffIds" value=""/>
+    </td>
+  </tr>
+  <tr>
+    <td class="yi_hang_9"></td>
+    <td class="yi_hang_9">
+      <input type="button" value=" 保 存 " class="button" onclick="setPurview();"/>
+    </td>
+  </tr>
+</table>
+</form>
+</body>
+</html>
+<script type="text/javascript">
+
+</script>

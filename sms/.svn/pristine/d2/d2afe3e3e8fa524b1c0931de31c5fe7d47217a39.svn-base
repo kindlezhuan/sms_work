@@ -1,0 +1,14 @@
+package com.hk.sms.dao;
+
+import java.util.HashMap;
+import java.util.List;
+
+import com.hk.sms.model.User;
+
+public interface UserDao {    
+    
+    public User getUserByName(String name);    
+    @SuppressWarnings("rawtypes")
+	public HashMap getAllUser();
+    public User getUser(String loginName,String passWord);
+} 

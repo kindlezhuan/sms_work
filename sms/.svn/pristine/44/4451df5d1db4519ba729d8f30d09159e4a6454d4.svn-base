@@ -1,0 +1,13 @@
+﻿[{
+        text: '企业信用',
+        leaf: true,
+        qtitle: "hbj_jczc/jczc_toHbj_jczc.do"
+    },{
+        text: '阀值判断',
+        leaf: true,
+        qtitle: "hbj_jczc/jczc_toHbj_fzpd.do"
+    },{
+        text: '危废统计分析',
+        leaf: true,
+        qtitle: "hbj_jczc/jczc_toHbj_wftjfx.do"
+    }]

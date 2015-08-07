@@ -1,0 +1,5 @@
+﻿[{
+	text: '危废运输车辆申报',
+ 	leaf: true,
+ 	qtitle: "vehicleManage/vm_toVehicleManage.do"
+}]

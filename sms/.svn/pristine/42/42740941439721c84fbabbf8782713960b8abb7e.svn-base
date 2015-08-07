@@ -1,0 +1,65 @@
+package com.hk.sms.action;
+
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+
+import org.apache.log4j.Logger;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import com.hk.sms.dao.UserDao;
+import com.hk.sms.dao.impl.UserDaoImpl;
+import com.hk.sms.model.User;
+import com.hk.sms.utils.UserInfo;
+
+public class SystemStartAction extends HttpServlet {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@SuppressWarnings("rawtypes")
+
+
+	public void init() throws ServletException {  
+        //把要做的事写到这里  
+	    FutureTask<String> task = new FutureTask<String>(new Callable<String>(){
+
+	         @Override
+	    public String call() throws Exception {
+	    start(); // 使用另一个线程来执行该方法，会避免占用Tomcat的启动时间
+	    return "Collection Completed";
+	         }
+	      
+	    });
+	    
+	    new Thread(task).start();
+     } 
+//	public void contextInitialized(ServletContextEvent arg0) {
+//		List<User> listuser = null;
+//		listuser = userDao.getAllUser();
+//		System.out.println(listuser);
+//		
+//	}
+	@SuppressWarnings("unchecked")
+	private void start(){
+		ServletContext ctx= getServletContext();//得到bean可以调用封装的DAO方法了，能进行增删改查
+		UserDao userDao = (UserDao) WebApplicationContextUtils.getWebApplicationContext(ctx).getBean("userDao");
+		System.out.println("enter into start");
+		HashMap listuser = null;
+		listuser = userDao.getAllUser();
+//		ListUser listuser1 = (ListUser) WebApplicationContextUtils.getWebApplicationContext(ctx).getBean("userInfo");
+//		listuser1.setListuser(listuser);
+		UserInfo.USERINFO = listuser;
+
+	}
+}

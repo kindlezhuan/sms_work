@@ -1,0 +1,38 @@
+﻿[{
+		text: '许可证管理',
+		leaf: true,
+		qtitle: "hbj_yeWuGuanLi/hy_toXkzGuanLi.do"
+		},{
+        text: '转移计划管理',
+        leaf: true,
+        qtitle: "hbj_yeWuGuanLi/hy_toZyjhGuanLi.do"
+    },{
+        text: '应急预案管理',
+        leaf: true,
+        qtitle: "hbj_yeWuGuanLi/hy_toYjyaGuanLi.do"
+    },{
+        text: '危废管理计划管理',
+        leaf: true,
+        qtitle: "hbj_yeWuGuanLi/hy_toWfgljhGuanLi.do"
+    },{
+        text: '固废申报管理',
+        leaf: true,
+        qtitle: "hbj_yeWuGuanLi/hy_toGfsbGuanLi.do"
+    },{
+        text: '车辆管理',
+        leaf: true,
+        qtitle: "vehicleManage/vm_toVehicleManage.do"
+    },{
+        text: '转移联单',
+        expanded: true,
+        children:[{
+        	text: '危废转移',
+	        leaf: true,
+	        qtitle: "hbj_yeWuGuanLi/hy_toZhuanYiLianDan.do?pageFlg=1"
+        },{
+        	text: '污泥转移',
+	        leaf: true,
+	        qtitle: "hbj_yeWuGuanLi/hy_toZhuanYiLianDan.do?pageFlg=2"
+        }]
+        
+    }]

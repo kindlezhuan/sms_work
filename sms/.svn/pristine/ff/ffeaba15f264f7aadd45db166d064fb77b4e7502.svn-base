@@ -1,0 +1,34 @@
+﻿ [{
+        text: '危废台账',
+        leaf: true,
+        qtitle: "cfqy/cfqy_wftz.do"
+    },{
+        text: '污泥台账',
+        leaf: true,
+        qtitle: "cfqy/cfqy_wntz.do"
+    },{
+        text: '设备管理',
+        leaf: true,
+        qtitle: "shebei/sb_toSB.do"
+    }]
+
+
+/*
+﻿[{
+    text: '台账管理',
+    expanded: true,
+    children: [{
+        text: '危废台账',
+        leaf: true,
+        qtitle: "taizhang/tz_toTaiZhang.do"
+    },{
+        text: '污泥台账',
+        leaf: true,
+        qtitle: "http://www.baidu.com"
+    },{
+        text: '设备管理',
+        leaf: true,
+        qtitle: "http://www.baidu.com"
+    }]
+}];
+*/

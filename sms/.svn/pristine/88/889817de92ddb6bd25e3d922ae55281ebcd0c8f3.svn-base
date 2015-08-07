@@ -1,0 +1,51 @@
+﻿[{
+        text: '应急预案',
+        leaf: true,
+        qtitle: "cfqy/cfqy_yjyasb.do"
+    },{
+        text: '管理计划',
+        leaf: true,
+        qtitle: "cfqy/cfqy_gljhsb.do"
+    },{
+        text: '转移计划',
+        leaf: true,
+        qtitle: "cfqy/cfqy_zyjhsb.do"
+    },{
+        text: '固废申报',
+        leaf: true,
+        qtitle: "cfqy/cfqy_gfsb.do"
+    },{
+    	text: '转移申请',
+	    expanded: false,
+	    children: [{
+	        text: '危废转移',
+	        leaf: true,
+	        qtitle: "cfqy/cfqy_wfzy.do"
+	    },{
+	        text: '污泥转移',
+	        leaf: true,
+	        qtitle: "cfqy/cfqy_wnzy.do"
+	    }]
+	}]
+
+﻿/*[{
+    text: '业务申报',
+    expanded: true,
+    children: [{
+        text: '应急预案',
+        leaf: true,
+        qtitle: "jilubo/jlb_toJLB.do"
+    },{
+        text: '管理计划',
+        leaf: true,
+        qtitle: "cs_gljh/cg_toCs_gljh.do"
+    },{
+        text: '转移计划',
+        leaf: true,
+        qtitle: "zyjh/zyjh_tozyjh.do"
+    },{
+        text: '固废申报',
+        leaf: true,
+        qtitle: "jilubo/jlb_toJLB.do"
+    }]
+}];*/

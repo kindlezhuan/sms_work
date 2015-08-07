@@ -1,0 +1,37 @@
+﻿[{
+    text: '智能监控',
+    expanded: true,
+    children: [{
+        text: '展示界面',
+        leaf: true,
+        url: "http://www.baidu.com"
+    },{
+        text: '报警查看',
+        leaf: true,
+        url: "http://www.baidu.com"
+    },{
+        text: '视频查询',
+        leaf: true,
+        url: "http://www.baidu.com"
+    },{
+        text: 'GIS展现',
+        expanded: false,
+        children:[{
+        	text: '行驶路径',
+        	leaf: true,
+        	url: "http://www.baidu.com"
+        	},{
+        	text: '专题图',
+        	expanded: false,
+        	children:[{
+        		text: '按区域展现',
+        		leaf: true,
+        		url: "http://www.baidu.com"
+        		},{
+        		text: '其它',
+        		leaf: true,
+        		url: "http://www.baidu.com"
+        		}]
+        	}]
+    }]
+}];

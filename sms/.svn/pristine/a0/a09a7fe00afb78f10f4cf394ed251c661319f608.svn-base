@@ -1,0 +1,216 @@
+/**
+ * 
+ */
+package com.hk.sms.action;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import com.hk.sms.constant.RetAjaxFlags;
+import com.hk.sms.dao.ServerDao;
+import com.hk.sms.model.ResultMessage;
+import com.hk.sms.model.SMSLog;
+import com.hk.sms.model.SMSSave;
+import com.hk.sms.model.User;
+import com.hk.sms.smsdo.SMSInfoprocess;
+import com.hk.sms.utils.DateFormate;
+import com.hk.sms.utils.JsonUtils;
+import com.hk.sms.utils.MD5Tool;
+import com.hk.sms.utils.TypeAndStatusConstant;
+import com.opensymphony.xwork2.ActionContext;
+
+
+@SuppressWarnings("serial")
+@Component
+@Scope(value = "prototype")
+public class SendAction extends BaseAction {
+
+
+	@SuppressWarnings("unused")
+	private static final Logger log = Logger.getLogger(SendAction.class);
+
+	@Autowired
+
+	private RetAjaxFlags result;
+	private String p1Dto;
+	private String page;
+	private ServerDao serverDao;
+	public String sendOne() {
+		System.out.println("sendOne");
+		page = "sendOne1";
+		return SUCCESS;
+	}
+	public String sendList() {
+		System.out.println("sendList");
+		page = "sendList";
+		return SUCCESS;
+	}
+	public String sendFile() {
+		System.out.println("sendFile");
+		page = "sendFile";
+		return SUCCESS;
+	}
+	public String sendDetail() {
+		System.out.println("sendDetail");
+		page = "sendDetail";
+		return SUCCESS;
+	}
+	
+	public String toSendOne(){
+		System.out.println("TO sendOne");
+		ActionContext ctx = ActionContext.getContext();
+		HttpSession session = ServletActionContext.getRequest().getSession();
+		HttpServletResponse response = ServletActionContext.getResponse();
+		response.setContentType("html/text;charset=utf-8");
+		HttpServletRequest request = (HttpServletRequest) ctx
+				.get(ServletActionContext.HTTP_REQUEST);
+		User user = (User) session.getAttribute("sms_loginData");
+		if (p1Dto == null) {
+			result = RetAjaxFlags.onOthersError();
+			result.setMsg("发生未知错误");
+		} else {
+			try{
+				SMSLog smsLog = JsonUtils.toBean(p1Dto,SMSLog.class);
+				smsLog.setGet_time(DateFormate.DateTOString());
+				smsLog.setGet_style(TypeAndStatusConstant.SEND_MESSAGE_FROM_WEBPAGE);
+				smsLog.setUID(user.getId().toString());
+				smsLog.setTimeMsg_ID(MD5Tool.getMD5(""+System.currentTimeMillis()+smsLog.getMSG()));
+				ResultMessage result_OBJ = new SMSInfoprocess().infoProcess_success(smsLog);//执行发送短信
+				if("fail".equals(result_OBJ.getResult()) ||result_OBJ.getResult() == null || result_OBJ.getResult() == "" ){
+					result = RetAjaxFlags.onOthersError();
+					result.setMsg("发送结果"+result_OBJ.getResultCode()+"结果描述"+result_OBJ.getResultInfo());
+            	}else{
+            		result = RetAjaxFlags.onSuccess(null);
+            	}
+			}
+			catch (Exception e) {
+				log.error("toSendOne ########    "+e);
+				result = RetAjaxFlags.onDbError();
+				//e.printStackTrace();
+			}
+		}
+		return "ajax";
+	}
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public String getAllLoginfo(){
+
+		System.out.println("TO getAllLoginfo");
+		ActionContext ctx = ActionContext.getContext();
+		HttpSession session = ServletActionContext.getRequest().getSession();
+		HttpServletResponse response = ServletActionContext.getResponse();
+		response.setContentType("html/text;charset=utf-8");
+		HttpServletRequest request = (HttpServletRequest) ctx
+				.get(ServletActionContext.HTTP_REQUEST);
+		User user = (User) session.getAttribute("sms_loginData");
+		if(user == null)
+			result = RetAjaxFlags.onLoseLoginData();
+		else{
+				try{
+					splitInit();
+					Map param = new HashMap();
+					param.put("sendName",
+							StringUtils.isNotEmpty(request.getParameter("sendName")) ? request
+									.getParameter("sendName") : null);
+					param.put("reciveName", StringUtils.isNotEmpty(request
+							.getParameter("reciveName")) ? request.getParameter("reciveName")
+							: null);
+					param.put("beginTime", StringUtils.isNotEmpty(request
+							.getParameter("beginTime")) ? request.getParameter("beginTime")
+							: null);
+					param.put("endTime", StringUtils.isNotEmpty(request
+							.getParameter("endTime")) ? request.getParameter("endTime")
+							: null);
+					int totalCount = serverDao.queryLoginfoCount(param);	
+					split.setTotalCnt(totalCount);
+					split.setP_page(page);
+					split.build();
+					param.put("start", split.getStart() + "");
+					param.put("end", split.getEnd() + "");
+					List<Map> userList = serverDao.queryLoginfo(param);
+					result = RetAjaxFlags.toJSONGridPanel(userList, totalCount);
+				}
+				catch (Exception e) {
+					log.error("getAllLoginfo ########    "+e);
+					result = RetAjaxFlags.onDbError();
+					//e.printStackTrace();
+				}
+			}
+			
+		return "ajax";
+	
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public String getDetail(){
+
+		System.out.println("TO getDetail");
+		ActionContext ctx = ActionContext.getContext();
+		HttpSession session = ServletActionContext.getRequest().getSession();
+		HttpServletResponse response = ServletActionContext.getResponse();
+		response.setContentType("html/text;charset=utf-8");
+		HttpServletRequest request = (HttpServletRequest) ctx
+				.get(ServletActionContext.HTTP_REQUEST);
+		User user = (User) session.getAttribute("sms_loginData");
+		if(user == null)
+			result = RetAjaxFlags.onLoseLoginData();
+		else{
+				try{
+					Map param = new HashMap();
+					param.put("l_id",
+							StringUtils.isNotEmpty(request.getParameter("l_id")) ? request
+									.getParameter("l_id") : null);
+					SMSLog smsLog = serverDao.getLog(param);
+					result = RetAjaxFlags.onSuccess(smsLog);
+				}
+				catch (Exception e) {
+					log.error("getDetail ########    "+e);
+					result = RetAjaxFlags.onDbError();
+					//e.printStackTrace();
+				}
+			}
+			
+		return "ajax";
+	
+	}
+	//setter and getter
+	public RetAjaxFlags getResult() {
+		return result;
+	}
+
+	public void setResult(RetAjaxFlags result) {
+		this.result = result;
+	}
+
+	public String getPage() {
+		return page;
+	}
+
+	public void setPage(String page) {
+		this.page = page;
+	}
+	public String getP1Dto() {
+		return p1Dto;
+	}
+	public void setP1Dto(String p1Dto) {
+		this.p1Dto = p1Dto;
+	}
+	public ServerDao getServerDao() {
+		return serverDao;
+	}
+	public void setServerDao(ServerDao serverDao) {
+		this.serverDao = serverDao;
+	}
+	
+}

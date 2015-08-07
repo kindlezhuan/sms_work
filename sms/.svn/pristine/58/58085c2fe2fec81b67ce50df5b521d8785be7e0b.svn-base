@@ -1,0 +1,121 @@
+package com.hk.sms.action;
+
+import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.struts2.ServletActionContext;
+
+import com.hk.sms.dao.UserDao;
+import com.hk.sms.model.ResultMessage;
+import com.hk.sms.model.SMSLog;
+import com.hk.sms.model.SMSSave;
+import com.hk.sms.model.SendMessage;
+import com.hk.sms.smsdo.SMSInfoprocess;
+import com.hk.sms.utils.Object2XML;
+import com.hk.sms.utils.UserInfo;
+import com.opensymphony.xwork2.ActionContext;
+
+public class MessageDoAction extends BaseAction {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private UserDao userDao;   
+	HashMap info;
+	ActionContext ctx = ActionContext.getContext();
+
+	HttpSession session = ServletActionContext.getRequest().getSession();
+	HttpServletResponse response = ServletActionContext.getResponse();
+	HttpServletRequest request = (HttpServletRequest) ctx
+			.get(ServletActionContext.HTTP_REQUEST);
+	String XMLString = request.getParameter("xml");
+	Object2XML o2x = new Object2XML();
+    @SuppressWarnings({ "rawtypes", "deprecation", "unused" })
+	public String execute() throws Exception {
+	    	response.setHeader("Content-type", "text/html;charset=UTF-8"); 
+    	if(request.getMethod()==null || !request.getMethod().equalsIgnoreCase("post")){  
+    	    return null;  
+    	} 
+    	SMSSave messageInfo = o2x.extractUsername(XMLString);
+    	messageInfo.setGet_time(new Date());
+    	ResultMessage restultMessage = new ResultMessage();
+		if(messageInfo != null){
+			info = (HashMap) UserInfo.USERINFO.get(messageInfo.getUID());
+			System.out.println(messageInfo.getUPWD());
+		}
+		else
+			info = null;
+        if(info == null){
+        	//用户不存在
+//        	response.setStatus(1221, "12321");
+//        	response.setStatus(15);
+        	restultMessage.setTimeMsg_ID(messageInfo.getTimeMsg_ID());
+        	restultMessage.setResult("失败");
+        	restultMessage.setResultInfo("用户不存在");
+        	restultMessage.setStatus(14);
+        	String XMLresult = o2x.constructResultXML(restultMessage);
+        	responseContent(response,XMLresult);
+        	return null;  
+        }else{
+            if(info.get("pwd").equals(messageInfo.getUPWD())){
+            	//doSomething
+            	SMSLog result_OBJ = new SMSInfoprocess().infoProcess_success(messageInfo);
+            	if("faile".equals(result_OBJ.getSend_result()) ||result_OBJ.getSend_result() == null || result_OBJ.getSend_result() == "" ){
+            		restultMessage.setTimeMsg_ID(messageInfo.getTimeMsg_ID());
+            		restultMessage.setResult("失败");
+            		restultMessage.setResultInfo(result_OBJ.getSend_result());
+            		restultMessage.setStatus(17);
+            		
+            	}else{
+            		restultMessage.setTimeMsg_ID(messageInfo.getTimeMsg_ID());
+            		restultMessage.setResult("成功");
+            		restultMessage.setResultInfo(result_OBJ.getSend_result());
+            		restultMessage.setStatus(15);
+            	}
+            	String XMLresult = o2x.constructResultXML(restultMessage);
+            	responseContent(response,XMLresult);
+            	return null;
+            }else{
+            	//用户名密码错误
+            	int result_int = new SMSInfoprocess().infoProcess_failure(messageInfo);
+            	restultMessage.setTimeMsg_ID(messageInfo.getTimeMsg_ID());
+            	restultMessage.setResult("失败");
+            	restultMessage.setResultInfo("用户密码错误");
+            	restultMessage.setStatus(16);
+            	String XMLresult = o2x.constructResultXML(restultMessage);
+            	responseContent(response,XMLresult);
+            	return null;  
+            }   
+        }
+    }  
+    public static void responseContent(HttpServletResponse response,String content){  
+        try {  
+            //把xml字符串写入响应     
+            byte[] xmlData = content.getBytes("UTF-8");     
+            response.setContentLength(xmlData.length);     
+  
+            ServletOutputStream os = response.getOutputStream();  
+            
+            os.write(xmlData);     
+  
+            os.flush();     
+            os.close();    
+        } catch (IOException e) {  
+            e.printStackTrace();  
+        }     
+    }  
+
+	public UserDao getUserDao() {
+		return userDao;
+	}
+	public void setUserDao(UserDao userDao) {
+		this.userDao = userDao;
+	}
+}

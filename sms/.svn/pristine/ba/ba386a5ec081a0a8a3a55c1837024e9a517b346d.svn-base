@@ -1,0 +1,9 @@
+﻿[{
+    	text: '许可证备案',
+    	leaf: true,
+    	qtitle: "cl_xkz/cx_toXkz.do"
+	},{
+    	text: '转移审核',
+    	leaf: true,
+    	url: "http://www.baidu.com"
+	}]

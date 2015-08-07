@@ -1,0 +1,59 @@
+<%@ page contentType="text/html; charset=GBK"%>
+<%@ taglib uri="/WEB-INF/framework-ogm.tld" prefix="eaf" %>
+<%
+String path = request.getContextPath();
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>分组信息</title>
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<link href="../../../style/css.css" rel="stylesheet" />
+<link href="../../../style/hotmail.css" rel="stylesheet" />
+<script type="text/javascript" src="<%=path %>/js/page_init.js"></script>
+<script type="text/javascript">
+function initPage(){
+	radioGuoupInit("shareFlag", "<bean:write name='groupInfo' property='shareFlag'/>");
+}
+</script>
+</head>
+<body onload="initPage();">
+<eaf:label/>
+<form action="groupAction.do?action=saveGroup" method="post">
+<input type="hidden" name="groupId" value='<bean:write name='groupInfo' property='groupId'/>'/>
+<table class="settletable" align="center" width="95%">
+  <tr>
+    <td colspan="4" class="yi_hang_8">分组信息</td>
+  </tr>
+  <tr>
+    <td width="15%" class="yi_hang_4"><b>分组名</b></td>
+    <td width="35%" class="yi_hang_9">
+      <input type="text" name="groupName" value="<bean:write name='groupInfo' property='groupName'/>" class="input_bottomline_nolength" size="100"/>
+      <span class="noempty">*</span>
+    </td>
+  </tr>
+  <tr>
+    <td width="15%" class="yi_hang_4"><b>分组描述</b></td>
+    <td width="35%" class="yi_hang_9">
+      <textarea name="groupDesc" rows="5" cols="50"><bean:write name='groupInfo' property='groupDesc'/></textarea>
+    </td>
+  </tr>
+  <tr>
+    <td width="15%" class="yi_hang_4"><b>权限</b></td>
+    <td width="35%" class="yi_hang_9">
+      <input type="radio" name="shareFlag" value="1" checked="checked">私有
+    </td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>
+      <input type="submit" value="保存" class="button">
+      <input type="button" value="取消" class="button" onclick="window.location='queryForStaffGroups.do'">
+    </td>
+  </tr>
+</table>
+</form>
+</body>
+</html>

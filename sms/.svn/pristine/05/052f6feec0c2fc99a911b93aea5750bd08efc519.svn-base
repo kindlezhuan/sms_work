@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+	<constant name="struts.i18n.encoding" value="UTF-8" />
+	<constant name="struts.action.extension" value="do" />
+	<constant name="struts.multipart.maxSize" value="1000000000" />
+	<constant name="struts.objectFactory" value="spring" />    
+    <constant name="struts.i18n.encoding" value="UTF-8" />    
+    <constant name="struts.i18n.reload" value="false" />    
+    <constant name="struts.configuration.xml.reload" value="false" />    
+    <constant name="struts.custom.i18n.resources" value="globalMessages" />    
+    
+    <constant name="struts.convention.package.locators.basePackage"    
+              value="com.hsinghsu.testSSI.action" />    
+    <constant name="struts.convention.result.path" value="/" />    
+    <constant name="struts.serve.static" value="true" />    
+    <constant name="struts.serve.static.browserCache" value="false" /> 
+	
+    <package name="sms_default" extends="json-default"> 
+    		<!-- 跳转到登陆页面 -->
+		<action name="tologin" class="com.hk.sms.action.LoginAction"
+			method="toLogin">
+			<result name="success">/login.jsp
+			</result>
+		</action>
+
+		<!-- 跳转到登陆页面 -->
+		<action name="login" class="com.hk.sms.action.LoginAction"
+			method="login">
+			<result name="success">/login.jsp
+			</result>
+			<result name="ajax" type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+
+		 <action name="tologout" class="com.hk.sms.action.LoginAction" 
+                method="loginout"> 
+                <result name="success" type="redirect">login.do</result> 
+        </action> 
+
+		<action name="toFirstPage" class="com.hk.sms.action.LoginAction"
+			method="toFirstPage">
+			<result name="success">/test_first/firstPage.jsp
+			</result>
+			<result name="login" type="redirect">login.do</result> 
+		</action>   
+    
+        <action name="post_sms" class="com.hk.sms.action.MessageDoAction">     
+            	<result name="success">/jsp/welcome.jsp</result>    
+            	<result name="error">/jsp/login.jsp</result>    
+        </action>  
+    </package> 
+    	<package name="firstPage" extends="sms_default" namespace="/firstPage">
+		<action name="fp_*" class="com.hk.sms.action.FirstPageAction"
+			method="{1}">
+			<param name="page">${page}</param>
+			<result name="success">/test_first/${page}.jsp
+			</result>
+			<result name="ajax" type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+		</package> 
+		<package name="sms_send" extends="sms_default" namespace="/sms_send">
+		<action name="sms_send_*" class="com.hk.sms.action.SendAction"
+			method="{1}">
+			<param name="page">${page}</param>
+			<result name="success">/sms_page/${page}.jsp</result>
+			<result name="ajax" type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+		</package> 
+		<package name="sms_user" extends="sms_default" namespace="/sms_user">
+		<action name="sms_user_*" class="com.hk.sms.action.UserManagerAction"
+			method="{1}">
+			<param name="page">${page}</param>
+			<result name="success">/sms_page/${page}.jsp</result>
+			<result name="ajax" type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+		</package> 
+		<package name="sms_gateway" extends="sms_default" namespace="/sms_gateway">
+		<action name="sms_gateway_*" class="com.hk.sms.action.GateWayManagerAction"
+			method="{1}">
+			<param name="page">${page}</param>
+			<result name="success">/sms_page/${page}.jsp</result>
+			<result name="ajax" type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+		</package> 
+</struts>
